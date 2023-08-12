@@ -18,7 +18,7 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple ans = empty_tuple();
+  tuple ans = null();
   int anssize = 0;
   int f0 = 0;
   int f1 = 1;

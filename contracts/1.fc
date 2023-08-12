@@ -5,26 +5,26 @@
   the subtree (branch) whose hash equals the received hash, the root cell of
   this branch should be returned. Return empty cell if the branch is not found.
 -}
-int are_slices_equal_1?(slice a, int b) {
-    return a.slice_hash() == b;
-}
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 () recv_internal() {
-
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
   stack~push_back(tree);
-  while(~stack.is_null()){
-        slice s = stack~pop_back().begin_parse();
-        if(~dump(are_slices_equal_1?(s, hash))){
-          return s~load_ref();
-        }
-        repeat(s.slice_refs()) {
-            stack~push_back(s~load_ref());
-        }
+  while (~ stack.is_null()) {
+    slice s = stack~pop_back().begin_parse();
+    ;; do something with s data
+    if(s.slice_hash() == hash){
+      return s~load_ref();
     }
-    return begin_cell().end_cell();
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
+    }
+  }
+  return null();
 }
