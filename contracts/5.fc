@@ -12,8 +12,6 @@
   1188518561323126046432205871807859915657177,
   1923063428480944139667114773918309212080528]
 -}
-tuple empty_tuple() asm "NIL";
-forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 
 () recv_internal() {
 }
