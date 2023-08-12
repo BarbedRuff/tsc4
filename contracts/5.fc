@@ -25,8 +25,8 @@ forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
   int f_1 = 1;
   int f_2 = 1;
   int count = 0;
-  while(anssize != k - 1){
-    if(count >= n){
+  while(anssize != k){
+    if(count >= n - 1){
       ans~push_back(f_0);
       anssize += 1;
     }
