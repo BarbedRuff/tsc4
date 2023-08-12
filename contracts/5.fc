@@ -18,6 +18,25 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  return null();
+  tuple ans = empty_tuple();
+  int anssize = 0;
+  int f0 = 0;
+  int f1 = 1;
+  int f2 = 1;
+  int count = 0;
+  while(anssize != k){
+    if(count >= n){
+      ans~tpush(f0);
+      anssize += 1;
+    }
+    if(anssize == k){
+      break;
+    }
+    f0 = f1;
+    f1 = f2;
+    f2 = f0 + f1;
+    count += 1;
+  }
+  return ans;
 }
 
