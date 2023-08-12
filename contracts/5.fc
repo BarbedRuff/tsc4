@@ -19,14 +19,14 @@ forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 
 ;; testable
 (tuple) fibonacci_sequence(int n, int k) method_id {
-  tuple ans = null();
+  tuple ans = empty_tuple();
   int anssize = 0;
   int f_0 = 0;
   int f_1 = 1;
   int f_2 = 1;
   int count = 0;
   while(anssize != k){
-    if(count >= n + 1){
+    if(count >= n){
       ans~push_back(f_0);
       anssize += 1;
     }
