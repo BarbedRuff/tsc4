@@ -29,9 +29,6 @@
       ans~tpush(f0);
       anssize += 1;
     }
-    if(anssize == k){
-      break;
-    }
     f0 = f1;
     f1 = f2;
     f2 = f0 + f1;
