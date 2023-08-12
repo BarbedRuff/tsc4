@@ -13,6 +13,10 @@
   1923063428480944139667114773918309212080528]
 -}
 
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 () recv_internal() {
 }
 
@@ -26,7 +30,7 @@
   int c = 0;
   while(anssize != k){
     if(c >= n){
-      ans~tpush(f0);
+      ans~push_back(f0);
       anssize += 1;
     }
     f0 = f1;
