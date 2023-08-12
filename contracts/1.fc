@@ -10,6 +10,7 @@ int are_slices_equal_1?(slice a, int b) {
 }
 
 () recv_internal() {
+
 }
 
 ;; testable
