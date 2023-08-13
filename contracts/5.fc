@@ -37,13 +37,12 @@ global int c;
     }
     f0 = f1;
     f1 = f2;
-    if(anssize == k - 1){
+    if(anssize == (k - 1)){
       tp~tpush(f0 + f1);
       anssize += 1;
+      return tp;
     }
-    else{
-      f2 = f0 + f1;
-    }
+    f2 = f0 + f1;
     c += 1;
   }
   return tp;
