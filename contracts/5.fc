@@ -29,17 +29,17 @@ global int c;
   f0 = 0;
   f1 = 1;
   f2 = 1;
-  c = -1;
+  c = 0;
   while(anssize != k){
+    if(c >= n){
+      tp~tpush(f0);
+      anssize += 1;
+    }
     f0 = f1;
     f1 = f2;
     f2 = f0;
     f2 += f1;
     c += 1;
-    if(c >= n){
-      tp~tpush(f0);
-      anssize += 1;
-    }
   }
   return tp;
 }
