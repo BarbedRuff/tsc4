@@ -29,9 +29,9 @@ global int c;
   f0 = 0;
   f1 = 1;
   c = 0;
-  while(t.tlen() != k){
+  while(tp.tlen() != k){
     if(c >= n){
-      if(t.tlen() == (k - 3)){
+      if(tp.tlen() == (k - 3)){
         tp~tpush(f0);
         tp~tpush(f1);
         tp~tpush(f0 + f1);
