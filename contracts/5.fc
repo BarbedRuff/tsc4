@@ -12,24 +12,27 @@
   1188518561323126046432205871807859915657177,
   1923063428480944139667114773918309212080528]
 -}
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+global tuple tp;
+global int anssize;
+global int f0;
+global int f1;
+global int f2;
+global int c;
 
 () recv_internal() {
 }
 
 ;; testable
 (tuple) fibonacci_sequence(int n, int k) method_id {
-  tuple tp = empty_tuple();
-  int anssize = 0;
-  int f0 = 0;
-  int f1 = 1;
-  int f2 = 1;
-  int c = 0;
+  tp = empty_tuple();
+  anssize = 0;
+  f0 = 0;
+  f1 = 1;
+  f2 = 1;
+  c = 0;
   while(anssize != k){
     if(c >= n){
-      tp~push_back(f0);
+      tp~tpush(f0);
       anssize += 1;
     }
     f0 = f1;

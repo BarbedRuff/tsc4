@@ -35,4 +35,11 @@ describe('Task5', () => {
         // the check is done inside beforeEach
         // blockchain and task5 are ready to use
     });
+    // it('fib', async () => {
+    //     let res = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence',
+    //     [{"type": "int", "value":201n},
+    //     {"type": "int", "value":4n}]
+    //     );
+    //     console.log(res.stack.at(0));
+    // });
 });
