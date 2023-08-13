@@ -41,7 +41,9 @@ global int c;
       tp~tpush(f0 + f1);
       anssize += 1;
     }
-    f2 = f0 + f1;
+    else{
+      f2 = f0 + f1;
+    }
     c += 1;
   }
   return tp;
