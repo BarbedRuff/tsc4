@@ -12,6 +12,7 @@
   1188518561323126046432205871807859915657177,
   1923063428480944139667114773918309212080528]
 -}
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 
 () recv_internal() {
 }
@@ -26,7 +27,7 @@
   int c = 0;
   while(anssize != k){
     if(c >= n){
-      tp~tpush(f0);
+      tp~push_back(f0);
       anssize += 1;
     }
     f0 = f1;
