@@ -37,7 +37,8 @@ global int c;
     }
     f0 = f1;
     f1 = f2;
-    f2 = f0 + f1;
+    f2 = f0;
+    f2 += f1;
     c += 1;
   }
   return tp;
