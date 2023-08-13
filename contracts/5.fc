@@ -28,21 +28,19 @@ global int c;
   anssize = 0;
   f0 = 0;
   f1 = 1;
-  f2 = 1;
   c = 0;
   while(anssize != k){
+    if(anssize == (k - 3)){
+      tp~tpush(f0);
+      tp~tpush(f1);
+      tp~tpush(f0 + f1);
+      return tp;
+    }
     if(c >= n){
       tp~tpush(f0);
       anssize += 1;
     }
-    f0 = f1;
-    f1 = f2;
-    if(anssize == (k - 1)){
-      tp~tpush(f0 + f1);
-      anssize += 1;
-      return tp;
-    }
-    f2 = f0 + f1;
+    (f0, f1) = (f1, f0 + f1);
     c += 1;
   }
   return tp;
