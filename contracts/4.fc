@@ -12,27 +12,31 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-int dec_char(int chr, int shift){
-  if(chr == 32){
-    return chr;
-  }
-  if (chr <= 90) {
-    return ((chr + shift - 65) % 26 + 65);
+int enc_char(int chr, int shift){
+  if ((chr <= 90) & (chr >= 65)) {
+    return (chr + shift - 65) % 26 + 65;
   }
   else {
-    return ((chr + shift - 97) % 26 + 97);
+    if((chr <= 122) & (chr >= 97)){
+      return (chr + shift - 97) % 26 + 97;
+    }
+    else{
+      return chr;
+    }
   }
 }
 
-int enc_char(int chr, int shift){
-  if(chr == 32){
-    return chr;
-  }
-  if (chr <= 90) {
+int dec_char(int chr, int shift){
+  if ((chr <= 90) & (chr >= 65)) {
     return (chr - shift - 65) % 26 + 65;
   }
   else {
-    return (chr - shift - 97) % 26 + 97;
+    if((chr <= 122) & (chr >= 97)){
+      return (chr - shift - 97) % 26 + 97;
+    }
+    else{
+      return chr;
+    }
   }
 }
 
