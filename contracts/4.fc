@@ -17,10 +17,10 @@ int enc_char(int chr, int shift){
     return (chr + shift - 65) % 26 + 65;
   }
   else {
-    if((chr <= 122) & (chr >= 97)){
+    if ((chr <= 122) & (chr >= 97)){
       return (chr + shift - 97) % 26 + 97;
     }
-    else{
+    else {
       return chr;
     }
   }
@@ -31,10 +31,10 @@ int dec_char(int chr, int shift){
     return (chr - shift - 65) % 26 + 65;
   }
   else {
-    if((chr <= 122) & (chr >= 97)){
+    if ((chr <= 122) & (chr >= 97)){
       return (chr - shift - 97) % 26 + 97;
     }
-    else{
+    else {
       return chr;
     }
   }
