@@ -13,14 +13,21 @@
   starts with 10101000111111...
   The output should be a linked list where the first
   cell ends with ...10100001111, and the second cell starts with 11111000111111...
-
 -}
-
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+global lenght;
 () recv_internal() {
 }
 
 ;; testable
-(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+(int) find_and_replace(int flag, int value, cell linked_list) method_id {
+  int temp = flag; lenght = 0;
+  while (temp > 0){
+    lenght += 1;
+    temp /= 10;
+  }
+  
 }
 
