@@ -51,12 +51,22 @@ int dec_char(int chr, int shift){
     if (flag) {
       s~load_uint(32);
       flag = 0;
+      builder inner = begin_cell();
+      repeat (32){
+        inner~store_uint(0, 1);
+      }
+      while (~ slice_data_empty?(s)){
+        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+      }
+      builders~tpush(inner);
     }
-    builder inner = begin_cell();
-    while (~ slice_data_empty?(s)){
-      inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+    else {
+      builder inner = begin_cell();
+      while (~ slice_data_empty?(s)){
+        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+      }
+      builders~tpush(inner);
     }
-    builders~tpush(inner);
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
@@ -83,12 +93,22 @@ int flag = -1;
     if (flag) {
       s~load_uint(32);
       flag = 0;
+      builder inner = begin_cell();
+      repeat (32){
+        inner~store_uint(0, 1);
+      }
+      while (~ slice_data_empty?(s)){
+        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+      }
+      builders~tpush(inner);
     }
-    builder inner = begin_cell();
-    while (~ slice_data_empty?(s)){
-      inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+    else {
+      builder inner = begin_cell();
+      while (~ slice_data_empty?(s)){
+        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+      }
+      builders~tpush(inner);
     }
-    builders~tpush(inner);
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
