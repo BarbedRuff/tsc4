@@ -12,7 +12,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-int enc_char(int chr, int shift){
+int dec_char(int chr, int shift){
   if(chr == 32){
     return chr;
   }
@@ -24,7 +24,7 @@ int enc_char(int chr, int shift){
   }
 }
 
-int dec_char(int chr, int shift){
+int enc_char(int chr, int shift){
   if(chr == 32){
     return chr;
   }
