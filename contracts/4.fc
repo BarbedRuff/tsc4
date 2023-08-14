@@ -5,17 +5,70 @@
   where the text is encrypted in a cell (after 32bit 00000000 prefix flag), the algorithm rotates the characters and the last ASCII
   character should go to the beginning. Return new text encoded in cell.
 -}
-
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
+}
+
+int enc_char(int chr, int shift){
+  if (chr <= 90) {
+    return ((chr + shift - 65) % 26 + 65);
+  }
+  else {
+    return ((chr + shift - 97) % 26 + 97);
+  }
+}
+
+int dec_char(int chr, int shift){
+  if (chr <= 90) {
+    return (chr - shift - 65) % 26 + 65;
+  }
+  else {
+    return (chr - shift - 97) % 26 + 97;
+  }
 }
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  tuple stack = null();
+  stack~push_back(text);
+  int f = 1;
+  builder ans = begin_cell();
+  while (~ stack.is_null()) {
+    slice s = stack~pop_back().begin_parse();
+    if (f == 1) {
+      s~load_uint(32); 
+      f = 0;
+    }
+    while (~ slice_data_empty?(s)){
+      ans~store_uint(enc_char(s~load_uint(8), shift), 8);
+    }
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
+    }
+  }
+  return ans.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  tuple stack = null();
+  stack~push_back(text);
+  int f = 1;
+  builder ans = begin_cell();
+  while (~ stack.is_null()) {
+    slice s = stack~pop_back().begin_parse();
+    if (f == 1) {
+      s~load_uint(32); f = 0;
+    }
+    while (~ slice_data_empty?(s)){
+      ans~store_uint(dec_char(s~load_uint(8), shift), 8);
+    }
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
+    }
+  }
+  return ans.end_cell();
 }
 
