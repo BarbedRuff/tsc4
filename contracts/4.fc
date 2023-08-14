@@ -75,9 +75,9 @@ int dec_char(int chr, int shift){
   tuple cells = null();
   while (~ stack.is_null()) { ;; while recursive stack
     slice s = stack~pop_back().begin_parse(); ;; get slice
-    ;; if (flag == 1) {
-    ;;   s~load_uint(32); flag = 0; ;; delete prefix
-    ;; }
+    if (flag == 1) {
+      s~load_uint(32); flag = 0; ;; delete prefix
+    }
     builder inner_cell = begin_cell(); ;; create innner cell
     while (~ slice_data_empty?(s)){
       inner_cell~store_uint(dec_char(s~load_uint(8), shift), 8);
