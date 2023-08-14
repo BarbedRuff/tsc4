@@ -16,17 +16,6 @@
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
   tuple tp = empty_tuple();
   int i = 0;
-  ;; while(i < matrixA.tlen()){
-  ;;   int j = 0;
-  ;;   tuple t = empty_tuple();
-  ;;   while(j < matrixB.at(0).tlen()){
-  ;;     t~tpush(0);
-  ;;     j += 1;
-  ;;   }
-  ;;   tp~tpush(t);
-  ;;   i += 1;
-  ;; }
-  ;; i = 0;
   while(i < matrixA.tlen()){
     int j = 0;
     tuple t = empty_tuple();
@@ -38,9 +27,29 @@
         k += 1;
       }
       t~tpush(x);
+      j += 1;
     }
     tp~tpush(t);
+    i += 1;
   }
   return tp;
 }
 
+;; (tuple) matrix() method_id {
+;;   tuple matrixA = empty_tuple();
+;;   tuple a1 = empty_tuple();
+;;   a1~tpush(1); a1~tpush(2); a1~tpush(3);
+;;   tuple a2 = empty_tuple();
+;;   a2~tpush(4); a2~tpush(5); a2~tpush(6);
+;;   matrixA~tpush(a1); matrixA~tpush(a2);
+;;   tuple matrixB = empty_tuple();
+;;   tuple b1 = empty_tuple();
+;;   b1~tpush(7); b1~tpush(8);
+;;   tuple b2 = empty_tuple();
+;;   b2~tpush(9); b2~tpush(10);
+;;   tuple b3 = empty_tuple();
+;;   b3~tpush(11); b3~tpush(12);
+;;   matrixB~tpush(b1); matrixB~tpush(b2); matrixB~tpush(b3);
+
+;;   return matrix_multiplier(matrixA, matrixB);
+;; }
