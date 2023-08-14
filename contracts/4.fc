@@ -8,6 +8,7 @@
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+(int) tlen (tuple t) asm "TLEN";
 () recv_internal() {
 }
 
@@ -31,44 +32,62 @@ int dec_char(int chr, int shift){
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  tuple stack = null();
-  stack~push_back(text);
-  int f = 1;
-  builder ans = begin_cell();
-  while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
-    if (f == 1) {
-      s~load_uint(32); 
-      f = 0;
+  int flag = 1; ;; first iteration
+  tuple stack = null(); ;; stack
+  stack~push_back(text); ;; add text
+  tuple cells = null();
+  while (~ stack.is_null()) { ;; while recursive stack
+    slice s = stack~pop_back().begin_parse(); ;; get slice
+    if (flag == 1) {
+      s~load_uint(32); flag = 0; ;; delete prefix
     }
+    builder inner_cell = begin_cell(); ;; create innner cell
     while (~ slice_data_empty?(s)){
-      ans~store_uint(enc_char(s~load_uint(8), shift), 8);
+      inner_cell~store_uint(enc_char(s~load_uint(8), shift), 8);
     }
+    cells~push_back(inner_cell);
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
+  }
+  builder ans = cells.at(cells.tlen() - 1);
+  int i = cells.tlen() - 2;
+  while (i >= 0) {
+    builder last = cells.at(i);
+    last.store_ref(ans.end_cell());
+    ans = last;
+    i -= 1;
   }
   return ans.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  tuple stack = null();
-  stack~push_back(text);
-  int f = 1;
-  builder ans = begin_cell();
-  while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
-    if (f == 1) {
-      s~load_uint(32); f = 0;
+  int flag = 1; ;; first iteration
+  tuple stack = null(); ;; stack
+  stack~push_back(text); ;; add text
+  tuple cells = null();
+  while (~ stack.is_null()) { ;; while recursive stack
+    slice s = stack~pop_back().begin_parse(); ;; get slice
+    if (flag == 1) {
+      s~load_uint(32); flag = 0; ;; delete prefix
     }
+    builder inner_cell = begin_cell(); ;; create innner cell
     while (~ slice_data_empty?(s)){
-      ans~store_uint(dec_char(s~load_uint(8), shift), 8);
+      inner_cell~store_uint(dec_char(s~load_uint(8), shift), 8);
     }
+    cells~push_back(inner_cell);
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
   }
+  builder ans = cells.at(cells.tlen() - 1);
+  int i = cells.tlen() - 2;
+  while (i >= 0) {
+    builder last = cells.at(i);
+    last.store_ref(ans.end_cell());
+    ans = last;
+    i -= 1;
+  }
   return ans.end_cell();
 }
-
