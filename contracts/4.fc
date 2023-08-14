@@ -44,7 +44,7 @@ int dec_char(int chr, int shift){
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   int flag = -1;
   tuple stack = null();
-  tuple builders = empty_tuple();
+  tuple builders = null();
   stack~push_back(text);
   while (~ stack.is_null()) {
     slice s = stack~pop_back().begin_parse();
@@ -58,35 +58,33 @@ int dec_char(int chr, int shift){
       while (~ slice_data_empty?(s)){
         inner~store_uint(enc_char(s~load_uint(8), shift), 8);
       }
-      builders~tpush(inner);
+      builders = cons(inner, builders);
     }
     else {
       builder inner = begin_cell();
       while (~ slice_data_empty?(s)){
         inner~store_uint(enc_char(s~load_uint(8), shift), 8);
       }
-      builders~tpush(inner);
+      builders = cons(inner, builders);
     }
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
   }
-  builder ans = builders.at(builders.tlen() - 1);
-  int i = builders.tlen() - 2;
-  while (i >= 0) {
-    builder last = builders.at(i);
+  builder ans = builders~list_next();
+  while (~ builders.is_null()) {
+    builder last = builders~list_next();
     last = last.store_ref(ans.end_cell());
     ans = last;
-    i -= 1;
   }
   return ans.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-int flag = -1;
+  int flag = -1;
   tuple stack = null();
-  tuple builders = empty_tuple();
+  tuple builders = null();
   stack~push_back(text);
   while (~ stack.is_null()) {
     slice s = stack~pop_back().begin_parse();
@@ -100,26 +98,24 @@ int flag = -1;
       while (~ slice_data_empty?(s)){
         inner~store_uint(dec_char(s~load_uint(8), shift), 8);
       }
-      builders~tpush(inner);
+      builders = cons(inner, builders);
     }
     else {
       builder inner = begin_cell();
       while (~ slice_data_empty?(s)){
         inner~store_uint(dec_char(s~load_uint(8), shift), 8);
       }
-      builders~tpush(inner);
+      builders = cons(inner, builders);
     }
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
   }
-  builder ans = builders.at(builders.tlen() - 1);
-  int i = builders.tlen() - 2;
-  while (i >= 0) {
-    builder last = builders.at(i);
+  builder ans = builders~list_next();
+  while (~ builders.is_null()) {
+    builder last = builders~list_next();
     last = last.store_ref(ans.end_cell());
     ans = last;
-    i -= 1;
   }
   return ans.end_cell();
 }
