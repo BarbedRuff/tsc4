@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Builder, Cell, toNano } from 'ton-core';
 import { Task4 } from '../wrappers/Task4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -31,8 +31,26 @@ describe('Task4', () => {
         });
     });
 
-    it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and task4 are ready to use
+    // it('should deploy', async () => {
+    //     // the check is done inside beforeEach
+    //     // blockchain and task4 are ready to use
+    // });
+
+    it('caesar', async () => {
+        let cell = new Builder();
+        let st = '0100100001100101011011000110110001101111001000000101011101101111011100100110110001100100';
+        for(var i = 0; i < 32; i++){
+            cell.storeBit(0);
+        }
+        for(var i = 0; i < st.length; i++){
+            cell.storeBit(st[i].charCodeAt(0) - 48);
+        }
+        console.log(cell.endCell());
+        let res = await blockchain.runGetMethod(task4.address, 'caesar_cipher_encrypt', [
+            {'type': 'int', 'value': 29n},
+            {'type': 'cell', 'cell': cell.endCell()}
+        ]);
+        let ans = res.stack.at(0);
+        console.log(ans);
     });
 });

@@ -13,6 +13,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 }
 
 int enc_char(int chr, int shift){
+  if(chr == 32){
+    return chr;
+  }
   if (chr <= 90) {
     return ((chr + shift - 65) % 26 + 65);
   }
@@ -22,6 +25,9 @@ int enc_char(int chr, int shift){
 }
 
 int dec_char(int chr, int shift){
+  if(chr == 32){
+    return chr;
+  }
   if (chr <= 90) {
     return (chr - shift - 65) % 26 + 65;
   }
