@@ -35,6 +35,7 @@
       int x = 0;
       while(k < matrixA.at(0).tlen()){
         x += matrixA.at(i).at(k) * matrixB.at(k).at(j);
+        k += 1;
       }
       t~tpush(x);
     }
