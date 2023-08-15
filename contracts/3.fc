@@ -15,9 +15,9 @@
   cell ends with ...10100001111, and the second cell starts with 11111000111111...
 -}
 global tuple builders;
-;; forall X -> int is_null (X x) asm "ISNULL";
-;; forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-;; forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 (int) getln(int x){
   int lenght = 0;
@@ -25,44 +25,116 @@ global tuple builders;
     lenght += 1;
     x /= 2;
   }
+  if(lenght == 0){
+    return 1;
+  }
   return lenght;
 }
 
-(int) pow(int n, int p){
+(int) pw(int n, int p){
   int res = 1;
   while(p > 0){
     res *= n;
+    p -= 1;
   }
   return res;
+}
+
+(tuple) int2tuple(int x){
+  tuple res = null();
+  while (x > 0){
+    res = cons(x % 2, res);
+    x /= 2;
+  }
+  return res;
+}
+
+(builder) store(int x, builder build){
+  if (x == 0) {
+    if(builder_bits(build) == 1023){
+      builders = cons(build, builders);
+      build = begin_cell();
+    }
+    build = store_uint(build, x, 4);
+  }
+  else {
+    tuple storedTuple = int2tuple(x);
+    while(~ storedTuple.is_null()) {
+      if(builder_bits(build) == 1023){
+        builders = cons(build, builders);
+        build = begin_cell();
+      }
+      build = store_uint(build, storedTuple~list_next(), 4);
+    }
+  }
+  return build;
 }
 
 () recv_internal() {
 }
 
 ;; testable
-(int) find_and_replace(int flag, int value, cell linked_list) method_id {
-  int lenght = getln(flag); int flag = -1;
+(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  builders = null();
+  builder build = begin_cell();
+  int lenght = getln(flag); int fl = -1;
   tuple stack = null();
   stack~push_back(linked_list);
   int bufer = 0;
+  int zeros = 0;
   while (~ stack.is_null()) {
     slice s = stack~pop_back().begin_parse();
     while (~ slice_data_empty?(s)){
-      if(flag){
+      if(fl){
         bufer = s~load_uint(lenght);
+        fl = 0;
       }
-      else{
-        ;;
+      else {
+        bufer = bufer << 1;
+        int j = s~load_uint(1);
+        if (j == 0) {
+          zeros += 1;
+        }
+        else {
+          zeros = 0;
+        }
+        bufer += j;
       }
-      if(bufer == flag){
-        ;; paste 
+      if(lenght == zeros){
+        repeat(lenght) {
+            build = store(0, build);
+        }
+        zeros = 0;
+        bufer = 0;
+      }
+      else {
+        if(lenght == getln(bufer)) {
+          if (bufer == flag) {
+            build = store(value, build);
+            bufer = 0;
+          }
+          else {
+            build = store(bufer >> (lenght - 1), build);
+            bufer = bufer - pw(2, lenght - 1);
+            repeat(lenght - getln(bufer)) {
+              build = store(0, build);
+            }
+          }
+        }
       }
     }
     if (s.slice_refs() == 1) {
       stack~push_back(s~load_ref());
     }
+  } 
+  if(builder_bits(build) != 0) {
+    builders = cons(build, builders);
   }
-  ;; slice s = linked_list.begin_parse();
-  ;; return (s~load_uint(7)) == flag;
+  builder ans = builders~list_next();
+  while (~ builders.is_null()) {
+    builder last = builders~list_next();
+    last = last.store_ref(ans.end_cell());
+    ans = last;
+  }
+  return ans.end_cell();
 }
-
