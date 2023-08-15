@@ -52,7 +52,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
       builders = cons(build, builders);
       build = begin_cell();
     }
-    build = store_uint(build, x, 1);
+    build~store_uint(storedTuple~list_next(), 1);
   }
   else {
     tuple storedTuple = int2tuple(x);
@@ -97,7 +97,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
           bufer = 0;
         }
         else {
-          build = store((bufer ^>> (flag_len - 1)), build);
+          build = store((bufer >> (flag_len - 1)), build);
           bufer = bufer - pw(2, (flag_len - 1));
           if (bufer < 0) {
             bufer = 0;
