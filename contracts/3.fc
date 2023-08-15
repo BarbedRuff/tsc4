@@ -14,20 +14,55 @@
   The output should be a linked list where the first
   cell ends with ...10100001111, and the second cell starts with 11111000111111...
 -}
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-global lenght;
+global tuple builders;
+;; forall X -> int is_null (X x) asm "ISNULL";
+;; forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+;; forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
+(int) getln(int x){
+  int lenght = 0;
+  while (x > 0){
+    lenght += 1;
+    x /= 2;
+  }
+  return lenght;
+}
+
+(int) pow(int n, int p){
+  int res = 1;
+  while(p > 0){
+    res *= n;
+  }
+  return res;
+}
+
 () recv_internal() {
 }
 
 ;; testable
 (int) find_and_replace(int flag, int value, cell linked_list) method_id {
-  int temp = flag; lenght = 0;
-  while (temp > 0){
-    lenght += 1;
-    temp /= 10;
+  int lenght = getln(flag); int flag = -1;
+  tuple stack = null();
+  stack~push_back(linked_list);
+  int bufer = 0;
+  while (~ stack.is_null()) {
+    slice s = stack~pop_back().begin_parse();
+    while (~ slice_data_empty?(s)){
+      if(flag){
+        bufer = s~load_uint(lenght);
+      }
+      else{
+        ;;
+      }
+      if(bufer == flag){
+        ;; paste 
+      }
+    }
+    if (s.slice_refs() == 1) {
+      stack~push_back(s~load_ref());
+    }
   }
-  
+  ;; slice s = linked_list.begin_parse();
+  ;; return (s~load_uint(7)) == flag;
 }
 
