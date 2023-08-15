@@ -33,22 +33,15 @@ describe('Task3', () => {
 
     it('should deploy', async () => {
         let cell = new Builder();
-        for(var i = 0; i < 1023; i++){
-            cell.storeBit(1);
-        }
-        let cell1 = new Builder();
-        cell1.storeBit(0);
-        cell1.storeBit(1);
-        cell1.storeBit(0);
-        cell1.storeBit(1); // 110101
-        cell.storeRef(cell1.endCell());
+        cell.storeBit(1); cell.storeBit(1); cell.storeBit(1);
+        cell.storeBit(0); cell.storeBit(0); cell.storeBit(0);
+        cell.storeBit(1); cell.storeBit(1); cell.storeBit(1);
         console.log(cell.endCell());
         let res = await blockchain.runGetMethod(task3.address, 'find_and_replace', [
-            {'type': 'int', 'value': 53n},
-            {'type': 'int', 'value': 0n},
+            {'type': 'int', 'value': 7n},
+            {'type': 'int', 'value': 5n},
             {'type': 'cell', 'cell': cell.endCell()}
         ]);
-        // let res = await blockchain.runGetMethod(task3.address, 'kek', []);
         console.log(res.stack.at(0));
     });
 });
