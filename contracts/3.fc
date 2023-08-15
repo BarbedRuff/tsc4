@@ -77,51 +77,44 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   builders = null();
   builder build = begin_cell();
-  int lenght = getln(flag); int fl = -1;
+  int lenght = getln(flag);
   tuple stack = null();
   stack~push_back(linked_list);
   int bufer = 0;
-  int zeros = 0;
   while (~ stack.is_null()) {
     slice s = stack~pop_back().begin_parse();
     while (~ slice_data_empty?(s)){
-      if(fl){
-        bufer = s~load_uint(lenght);
-        fl = 0;
+      int j = s~load_uint(1);
+      if (j == 0) {
+        if (bufer == 0) {
+          build = store(0, build);
+        }
+        else {
+          bufer = bufer << 1;
+        }
       }
       else {
         bufer = bufer << 1;
-        int j = s~load_uint(1);
-        if (j == 0) {
-          zeros += 1;
-        }
-        else {
-          zeros = 0;
-        }
         bufer += j;
       }
-      if(lenght == zeros){
-        repeat(lenght) {
+
+      if (lenght == getln(bufer)) {
+        if (flag == bufer) {
+          build = store(value, build);
+          bufer = 0;
+        } 
+        else {
+          build = store((bufer >> (lenght - 1)), build);
+          bufer = bufer - pw(2, lenght - 1);
+          repeat (lenght - getln(bufer)) {
             build = store(0, build);
-        }
-        zeros = 0;
-        bufer = 0;
-      }
-      else {
-        if(lenght == getln(bufer)) {
-          if (bufer == flag) {
-            build = store(value, build);
-            bufer = 0;
-          }
-          else {
-            build = store(bufer >> (lenght - 1), build);
-            bufer = bufer - pw(2, lenght - 1);
-            repeat(lenght - getln(bufer)) {
-              build = store(0, build);
-            }
           }
         }
       }
+    }
+    if (bufer != 0) {
+      build = store(bufer, build);
+      bufer = 0;
     }
     if (s.slice_refs() == 1) {
       stack~push_back(s~load_ref());
