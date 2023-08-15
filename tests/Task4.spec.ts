@@ -51,5 +51,6 @@ describe('Task4', () => {
             {'type': 'cell', 'cell': cell.endCell()}
         ]);
         console.log(res.stack.at(0));
+        console.log(res.gasUsed);
     });
 });

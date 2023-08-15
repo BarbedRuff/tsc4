@@ -67,7 +67,7 @@ int dec_char(int chr, int shift){
       }
       builders = cons(inner, builders);
     }
-    repeat (s.slice_refs()) {
+    if (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
   }
