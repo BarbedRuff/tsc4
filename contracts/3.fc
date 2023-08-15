@@ -25,9 +25,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     lenght += 1;
     x /= 2;
   }
-  if(lenght == 0){
-    return 1;
-  }
   return lenght;
 }
 
@@ -50,7 +47,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 }
 
 (builder) store(int x, builder build){
-  if (x == 0) {
+  if ((x == 0) | (x == 1)) {
     if(builder_bits(build) == 1020){
       builders = cons(build, builders);
       build = begin_cell();
@@ -64,7 +61,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
         builders = cons(build, builders);
         build = begin_cell();
       }
-      build = store_uint(build, storedTuple~list_next(), 1);
+      build~store_uint(storedTuple~list_next(), 1);
     }
   }
   return build;
@@ -75,50 +72,48 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  builders = null();
   builder build = begin_cell();
-  int lenght = getln(flag);
+  int flag_len = getln(flag);
+  int bufer = 0;
+
   tuple stack = null();
   stack~push_back(linked_list);
-  int bufer = 0;
   while (~ stack.is_null()) {
     slice s = stack~pop_back().begin_parse();
-    while (~ slice_data_empty?(s)){
-      int j = s~load_uint(1);
-      if (j == 0) {
-        if (bufer == 0) {
-          build = store(0, build);
-        }
-        else {
-          bufer = bufer << 1;
-        }
+    while (~ slice_data_empty?(s)) {
+      ;; load
+      int bit = s~load_uint(1);
+      if ((bufer == 0) & (bit == 0)) {
+        build = store(bit, build);
       }
       else {
         bufer = bufer << 1;
-        bufer += j;
+        bufer += bit;
       }
-
-      if (lenght == getln(bufer)) {
-        if (flag == bufer) {
+      ;; store
+      if (flag_len == getln(bufer)) {
+        if (bufer == flag) {
           build = store(value, build);
           bufer = 0;
-        } 
+        }
         else {
-          build = store((bufer >> (lenght - 1)), build);
-          bufer = bufer - pw(2, lenght - 1);
-          repeat (lenght - getln(bufer) - 1) {
+          build = store((bufer >> (flag_len - 1)), build);
+          bufer = bufer - pw(2, (flag_len - 1));
+          if (bufer < 0) {
+            bufer = 0;
+          }
+          repeat (flag_len - getln(bufer) - 1) {
             build = store(0, build);
           }
         }
       }
     }
-    if (s.slice_refs() == 1) {
+    if (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
-  } 
+  }
   if (bufer != 0) {
     build = store(bufer, build);
-    bufer = 0;
   }
   if(builder_bits(build) != 0) {
     builders = cons(build, builders);
