@@ -99,9 +99,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
         else {
           build = store((bufer >> (flag_len - 1)), build);
           bufer = bufer - pw(2, (flag_len - 1));
-          if (bufer < 0) {
-            bufer = 0;
-          }
           repeat (flag_len - getln(bufer) - 1) {
             build = store(0, build);
           }
