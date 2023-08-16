@@ -16,28 +16,113 @@
 -}
 global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
+(int) getln(int x){
+  int lenght = 0;
+  while (x > 0){
+    lenght += 1;
+    x /= 2;
+  }
+  if(lenght == 0){
+    return 1;
+  }
+  return lenght;
+}
+
+(int) pw(int n, int p){
+  int res = 1;
+  while(p > 0){
+    res *= n;
+    p -= 1;
+  }
+  return res;
+}
+
+(tuple) int2tuple(int x){
+  tuple res = null();
+  while (x > 0){
+    res = cons(x % 2, res);
+    x /= 2;
+  }
+  return res;
+}
+
+(builder) store(int x, builder build){
+  if (x == 0) {
+    if(builder_bits(build) == 500){
+      builders = cons(build, builders);
+      build = begin_cell();
+    }
+    build = store_uint(build, x, 1);
+  }
+  else {
+    tuple storedTuple = int2tuple(x);
+    while(~ storedTuple.is_null()) {
+      if(builder_bits(build) == 500){
+        builders = cons(build, builders);
+        build = begin_cell();
+      }
+      build = store_uint(build, storedTuple~list_next(), 1);
+    }
+  }
+  return build;
+}
 
 () recv_internal() {
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  ;;init
-  tuple stack = null();
-  stack = cons(linked_list, stack);
   builders = null();
+  builder build = begin_cell();
+  int lenght = getln(flag);
+  tuple stack = null();
+  stack~push_back(linked_list);
   int bufer = 0;
-  ;;process
   while (~ stack.is_null()) {
-    slice s = stack~list_next().begin_parse();
+    slice s = stack~pop_back().begin_parse();
     while (~ slice_data_empty?(s)){
-      int b1t = s~load_uint(1);
+      int j = s~load_uint(1);
+      if (j == 0) {
+        if (bufer == 0) {
+          build = store(0, build);
+        }
+        else {
+          bufer = bufer << 1;
+        }
+      }
+      else {
+        bufer = bufer << 1;
+        bufer += j;
+      }
+
+      if (lenght == getln(bufer)) {
+        if (flag == bufer) {
+          build = store(value, build);
+          bufer = 0;
+        } 
+        else {
+          build = store((bufer >> (lenght - 1)), build);
+          bufer = bufer - pw(2, lenght - 1);
+          repeat (lenght - getln(bufer) - 1) {
+            build = store(0, build);
+          }
+        }
+      }
     }
-    if (s.slice_refs()) {
-      stack = cons(s~load_ref(), stack);
+    if (s.slice_refs() == 1) {
+      stack~push_back(s~load_ref());
     }
+  } 
+  if (bufer != 0) {
+    build = store(bufer, build);
+    bufer = 0;
   }
-  ;;store
+  if(builder_bits(build) != 0) {
+    builders = cons(build, builders);
+  }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     builder last = builders~list_next();
