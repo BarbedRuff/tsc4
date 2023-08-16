@@ -6,8 +6,6 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 (int) tlen (tuple t) asm "TLEN";
 () recv_internal() {
 }
@@ -45,9 +43,9 @@ int dec_char(int chr, int shift){
   int flag = -1;
   tuple stack = null();
   tuple builders = null();
-  stack~push_back(text);
+  stack = cons(text, stack);
   while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
+    slice s = stack~list_next().begin_parse();
     if (flag) {
       s~load_uint(32);
       flag = 0;
@@ -68,7 +66,7 @@ int dec_char(int chr, int shift){
       builders = cons(inner, builders);
     }
     if (s.slice_refs()) {
-      stack~push_back(s~load_ref());
+      stack = cons(s~load_ref(), stack);
     }
   }
   builder ans = builders~list_next();
@@ -85,9 +83,9 @@ int dec_char(int chr, int shift){
   int flag = -1;
   tuple stack = null();
   tuple builders = null();
-  stack~push_back(text);
+  stack = cons(text, stack);
   while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
+    slice s = stack~list_next().begin_parse();
     if (flag) {
       s~load_uint(32);
       flag = 0;
@@ -108,7 +106,7 @@ int dec_char(int chr, int shift){
       builders = cons(inner, builders);
     }
     if (s.slice_refs()) {
-      stack~push_back(s~load_ref());
+      stack = cons(s~load_ref(), stack);
     }
   }
   builder ans = builders~list_next();
