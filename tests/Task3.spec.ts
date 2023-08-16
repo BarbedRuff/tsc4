@@ -45,8 +45,8 @@ describe('Task3', () => {
         // cell.storeRef(cell1.endCell());
         console.log(cell.endCell());
         let res = await blockchain.runGetMethod(task3.address, 'find_and_replace', [
-            {'type': 'int', 'value': 9n},
             {'type': 'int', 'value': 1n},
+            {'type': 'int', 'value': 0n},
             {'type': 'cell', 'cell': cell.endCell()}
         ]);
         console.log(res.stack.at(0));
