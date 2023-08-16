@@ -18,6 +18,7 @@ global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+(int) tlen (tuple t) asm "TLEN";
 
 (int) getln(int x){
   int lenght = 0;
@@ -118,10 +119,10 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   if(builder_bits(build) != 0) {
     builders = cons(build, builders);
   }
-  builder ans = builders~list_next();
-  if (ans.is_null()) {
+  if (builders.tlen() == 0) {
     return begin_cell().end_cell();
   }
+  builder ans = builders~list_next();
   while (~ builders.is_null()) {
     builder last = builders~list_next();
     last = last.store_ref(ans.end_cell());
