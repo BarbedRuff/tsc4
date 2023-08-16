@@ -1,30 +1,14 @@
-{-
-  TASK 5 - Fibonacci sequence
-  Implement a function that generates the Fibonacci
-  sequence from N to N+K terms (0<=N<=370; 0<=N+K<=371; 0<=K<=255).
-  The first two terms of the Fibonacci sequence are F_0 = 0 and F_1 = 1,
-  and the rest are defined as F_n = F_(n-1) + F_(n-2).
-  The resulting Fibonacci sequence should be stored in a tuple.
-  For example, a request with N = 1 and K = 3 should return a tuple [1, 1, 2],
-  and a request with N = 201 and K = 4 should return a tuple
-  [453973694165307953197296969697410619233826,
-  734544867157818093234908902110449296423351,
-  1188518561323126046432205871807859915657177,
-  1923063428480944139667114773918309212080528]
--}
 (int) tlen (tuple t) asm "TLEN";
 
 () recv_internal() {
 }
 
-;; testable
 (tuple) fibonacci_sequence(int n, int k) method_id {
   tuple tp = empty_tuple();
   int f0 = 0;
   int f1 = 1;
-  int c = 0;
   while(tp.tlen() != k){
-    if(c >= n){
+    if(n <= 0){
       if(tp.tlen() == (k - 3)){
         tp~tpush(f0);
         tp~tpush(f1);
@@ -34,7 +18,7 @@
       tp~tpush(f0);
     }
     (f0, f1) = (f1, f0 + f1);
-    c += 1;
+    n -= 1;
   }
   return tp;
 }
