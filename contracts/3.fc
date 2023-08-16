@@ -67,9 +67,7 @@ int bits(int number) asm "UBITSIZE";
   }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
-    builder last = builders~list_next();
-    last = last.store_ref(ans.end_cell());
-    ans = last;
+    ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();
 }
