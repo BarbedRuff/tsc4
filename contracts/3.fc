@@ -19,33 +19,19 @@ forall X -> int is_null (X x) asm "ISNULL";
 int pow2(int x) asm "POW2";
 int bits(int number) asm "UBITSIZE";
 
-(tuple) int2tuple(int x) {
-  tuple res = null();
-  while (x > 0){
-    res = cons(x % 2, res);
-    x /= 2;
-  }
-  return res;
-}
-
 (builder) store(int x, builder build) {
-  if ((x == 0) | (x == 1)) {
-    if(builder_bits(build) == 1023){
-      builders = cons(build, builders);
-      build = begin_cell();
-    }
-    build~store_uint(x, 1);
+  int ln = 0;
+  if (x == 0) {
+    ln = 1;
   }
   else {
-    tuple storedTuple = int2tuple(x);
-    while(~ storedTuple.is_null()) {
-      if(builder_bits(build) == 1023){
-        builders = cons(build, builders);
-        build = begin_cell();
-      }
-      build~store_uint(storedTuple~list_next(), 1);
-    }
+    ln = bits(x);
   }
+  if(builder_bits(build) + ln > 1023){
+    builders = cons(build, builders);
+    build = begin_cell();
+  }
+  build~store_uint(x, ln);
   return build;
 }
 
