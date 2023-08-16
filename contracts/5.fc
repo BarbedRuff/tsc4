@@ -25,8 +25,10 @@
       tp~tpush(f0);
     }
     else {
-      tp~tpush(f0);
-      tp~tpush(f1);
+      if(k == 2) {
+        tp~tpush(f0);
+        tp~tpush(f1);
+      }
     }
   }
   return tp;
