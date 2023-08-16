@@ -18,24 +18,8 @@ global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-
-(int) getln(int x){
-  int lenght = 0;
-  while (x > 0){
-    lenght += 1;
-    x /= 2;
-  }
-  return lenght;
-}
-
-(int) pw(int n, int p){
-  int res = 1;
-  while(p > 0){
-    res *= n;
-    p -= 1;
-  }
-  return res;
-}
+int bitsize(int x) asm "BITSIZE";
+int pow2(int x) asm "POW2";
 
 (tuple) int2tuple(int x){
   tuple res = null();
@@ -73,7 +57,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   builder build = begin_cell();
-  int flag_len = getln(flag);
+  int flag_len = bitsize(flag);
   int bufer = 0;
 
   tuple stack = null();
@@ -91,18 +75,18 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
         bufer += bit;
       }
       ;; store
-      if (flag_len == getln(bufer)) {
+      if (flag_len == bitsize(bufer)) {
         if (bufer == flag) {
           build = store(value, build);
           bufer = 0;
         }
         else {
-          build = store((bufer >> (flag_len - 1)), build);
-          bufer = bufer - pw(2, (flag_len - 1));
+          build = store((bufer ~>> (flag_len - 1)), build);
+          bufer = bufer - pow2(flag_len - 1);
           if (bufer < 0) {
             bufer = 0;
           }
-          repeat (flag_len - getln(bufer) - 1) {
+          repeat (flag_len - bitsize(bufer) - 1) {
             build = store(0, build);
           }
         }
@@ -111,6 +95,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     if (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
+  }
+  if (bufer != 0) {
+    build = store(bufer, build);
   }
   builders = cons(build, builders);
   builder ans = builders~list_next();
