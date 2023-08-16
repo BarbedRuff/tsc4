@@ -49,7 +49,7 @@ forall X -> int is_null (X x) asm "ISNULL";
 
 (builder) store(int x, builder build) {
   if ((x == 0) | (x == 1)) {
-    if(builder_bits(build) == 1020){
+    if(builder_bits(build) == 1023){
       builders = cons(build, builders);
       build = begin_cell();
     }
@@ -58,7 +58,7 @@ forall X -> int is_null (X x) asm "ISNULL";
   else {
     tuple storedTuple = int2tuple(x);
     while(~ storedTuple.is_null()) {
-      if(builder_bits(build) == 1020){
+      if(builder_bits(build) == 1023){
         builders = cons(build, builders);
         build = begin_cell();
       }
