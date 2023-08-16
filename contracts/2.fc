@@ -1,28 +1,20 @@
-{-
-  TASK 2 - Matrix multiplier
-  Write the method that multiplies one matrix by another.
-  The 1st and 2nd parameter of the function will contain
-  a matrix implemented using tuples (eg: [[1,2], [3,4]]).
-  Matrices can be of different sizes, ranging from 4x4
-  up to 32x32.
-  Matrix can be rectangular where matrixA must to be of size n*m & matrixB of size m*p.
-  After calculating the result matrix, the function should return final result (as tuple).
--}
 (int) tlen (tuple t) asm "TLEN";
 () recv_internal() {
 }
 
-;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
   tuple tp = empty_tuple();
+  int a = matrixA.tlen();
+  int b = matrixB.at(0).tlen();
+  int c = matrixA.at(0).tlen();
   int i = 0;
-  while(i < matrixA.tlen()){
+  while(i < a){
     int j = 0;
     tuple t = empty_tuple();
-    while(j < matrixB.at(0).tlen()){
+    while(j < b){
       int k = 0;
       int x = 0;
-      while(k < matrixA.at(0).tlen()){
+      while(k < c){
         x += matrixA.at(i).at(k) * matrixB.at(k).at(j);
         k += 1;
       }
@@ -34,22 +26,3 @@
   }
   return tp;
 }
-
-;; (tuple) matrix() method_id {
-;;   tuple matrixA = empty_tuple();
-;;   tuple a1 = empty_tuple();
-;;   a1~tpush(1); a1~tpush(2); a1~tpush(3);
-;;   tuple a2 = empty_tuple();
-;;   a2~tpush(4); a2~tpush(5); a2~tpush(6);
-;;   matrixA~tpush(a1); matrixA~tpush(a2);
-;;   tuple matrixB = empty_tuple();
-;;   tuple b1 = empty_tuple();
-;;   b1~tpush(7); b1~tpush(8);
-;;   tuple b2 = empty_tuple();
-;;   b2~tpush(9); b2~tpush(10);
-;;   tuple b3 = empty_tuple();
-;;   b3~tpush(11); b3~tpush(12);
-;;   matrixB~tpush(b1); matrixB~tpush(b2); matrixB~tpush(b3);
-
-;;   return matrix_multiplier(matrixA, matrixB);
-;; }
