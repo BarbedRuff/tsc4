@@ -48,7 +48,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 (builder) store(int x, builder build){
   if ((x == 0) | (x == 1)) {
-    if(builder_bits(build) == 1020){
+    if(builder_bits(build) == 1016){
       builders = cons(build, builders);
       build = begin_cell();
     }
@@ -57,7 +57,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   else {
     tuple storedTuple = int2tuple(x);
     while(~ storedTuple.is_null()) {
-      if(builder_bits(build) == 1020){
+      if(builder_bits(build) == 1016){
         builders = cons(build, builders);
         build = begin_cell();
       }
@@ -72,6 +72,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  int repl = -1;
   builder build = begin_cell();
   int flag_len = getln(flag);
   int bufer = 0;
@@ -93,11 +94,12 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
       ;; store
       if (flag_len == getln(bufer)) {
         if (bufer == flag) {
+          repl = 0;
           build = store(value, build);
           bufer = 0;
         }
         else {
-          build = store((bufer ~>> (flag_len - 1)), build);
+          build = store((bufer >> (flag_len - 1)), build);
           bufer = bufer - pw(2, (flag_len - 1));
           if (bufer < 0) {
             bufer = 0;
@@ -112,10 +114,15 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
       stack~push_back(s~load_ref());
     }
   }
+  if (repl) {
+    return linked_list;
+  }
   if (bufer != 0) {
     build = store(bufer, build);
   }
-  builders = cons(build, builders);
+  if(builder_bits(build) != 0) {
+    builders = cons(build, builders);
+  }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     builder last = builders~list_next();
