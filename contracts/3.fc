@@ -16,11 +16,11 @@
 -}
 global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-(int) tlen (tuple t) asm "TLEN";
 
-(int) getln(int x){
+(int) getln(int x) {
+  if(x == 0) {
+    return 1;
+  }
   int lenght = 0;
   while (x > 0){
     lenght += 1;
@@ -29,7 +29,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return lenght;
 }
 
-(int) pw(int n, int p){
+(int) pw(int n, int p) {
   int res = 1;
   while(p > 0){
     res *= n;
@@ -38,7 +38,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return res;
 }
 
-(tuple) int2tuple(int x){
+(tuple) int2tuple(int x) {
   tuple res = null();
   while (x > 0){
     res = cons(x % 2, res);
@@ -47,9 +47,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   return res;
 }
 
-(builder) store(int x, builder build){
+(builder) store(int x, builder build) {
   if ((x == 0) | (x == 1)) {
-    if(builder_bits(build) == 1016){
+    if(builder_bits(build) == 1020){
       builders = cons(build, builders);
       build = begin_cell();
     }
@@ -58,7 +58,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   else {
     tuple storedTuple = int2tuple(x);
     while(~ storedTuple.is_null()) {
-      if(builder_bits(build) == 1016){
+      if(builder_bits(build) == 1020){
         builders = cons(build, builders);
         build = begin_cell();
       }
@@ -73,16 +73,15 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  builder build = begin_cell();
   int flag_len = getln(flag);
+  builder build = begin_cell();
+  builders = null();
   int bufer = 0;
-
   tuple stack = null();
-  stack~push_back(linked_list);
+  stack = cons(linked_list, stack);
   while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
-    while (~ slice_data_empty?(s)) {
-      ;; load
+    slice s = stack~list_next().begin_parse();
+    while (~ slice_data_empty?(s)){
       int bit = s~load_uint(1);
       if ((bufer == 0) & (bit == 0)) {
         build = store(bit, build);
@@ -91,8 +90,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
         bufer = bufer << 1;
         bufer += bit;
       }
-      ;; store
-      if (flag_len == getln(bufer)) {
+      if ((flag_len == getln(bufer)) & (bufer != 0)) {
         if (bufer == flag) {
           build = store(value, build);
           bufer = 0;
@@ -100,9 +98,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
         else {
           build = store((bufer >> (flag_len - 1)), build);
           bufer = bufer - pw(2, (flag_len - 1));
-          if (bufer < 0) {
-            bufer = 0;
-          }
           repeat (flag_len - getln(bufer) - 1) {
             build = store(0, build);
           }
@@ -110,17 +105,14 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
       }
     }
     if (s.slice_refs()) {
-      stack~push_back(s~load_ref());
+      stack = cons(s~load_ref(), stack);
     }
   }
   if (bufer != 0) {
     build = store(bufer, build);
   }
-  if(builder_bits(build) != 0) {
+  if ((builders.is_null()) | (builder_bits(build) != 0)) {
     builders = cons(build, builders);
-  }
-  if (builders.tlen() == 0) {
-    return begin_cell().end_cell();
   }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
