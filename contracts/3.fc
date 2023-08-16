@@ -81,7 +81,7 @@ int pow2(int x) asm "POW2";
           bufer = 0;
         }
         else {
-          build = store((bufer ~>> (flag_len - 1)), build);
+          build = store((bufer ^>> (flag_len - 1)), build);
           bufer = bufer - pow2(flag_len - 1);
           if (bufer < 0) {
             bufer = 0;
