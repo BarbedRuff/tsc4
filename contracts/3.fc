@@ -49,7 +49,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 (builder) store(int x, builder build){
   if ((x == 0) | (x == 1)) {
-    if(builder_bits(build) == 1023){
+    if(builder_bits(build) == 1016){
       builders = cons(build, builders);
       build = begin_cell();
     }
@@ -57,7 +57,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   }
   else {
     tuple storedTuple = int2tuple(x);
-    if (builder_bits(build) + storedTuple.tlen() >= 1023) {
+    if (builder_bits(build) + storedTuple.tlen() >= 1016) {
         builders = cons(build, builders);
         build = begin_cell();
     }
