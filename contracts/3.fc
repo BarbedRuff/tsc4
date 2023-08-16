@@ -16,16 +16,8 @@
 -}
 global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
+int pow2(int x) asm "POW2";
 int bits(int number) asm "UBITSIZE";
-
-(int) pw(int n, int p) {
-  int res = 1;
-  while(p > 0){
-    res *= n;
-    p -= 1;
-  }
-  return res;
-}
 
 (tuple) int2tuple(int x) {
   tuple res = null();
@@ -86,7 +78,7 @@ int bits(int number) asm "UBITSIZE";
         }
         else {
           build = store((bufer >> (flag_len - 1)), build);
-          bufer = bufer - pw(2, (flag_len - 1));
+          bufer = bufer - pow2(flag_len - 1);
           repeat (flag_len - bits(bufer) - 1) {
             build = store(0, build);
           }
