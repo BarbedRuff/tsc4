@@ -4,22 +4,23 @@
 }
 
 (tuple) fibonacci_sequence(int n, int k) method_id {
-  tuple tp = empty_tuple();
-  int f0 = 36138207717265885328441519836863123286695915870773021050058862406562749608741;
-  int f1 = 58472848379039952684853851736901133239741266891456844557261755914039063645794;
-  int c = 369;
-  if (n + k == 371) {
-    tp = cons(f0 + f1, tp);
-    k -= 1;
+  tuple tp = empty_tuple(); 
+  if(k == 0) { return tp; }
+  int a0 = 0;
+  int a1 = 1;
+  repeat (n - 1) {
+    (a0, a1) = (a1, a0 + a1);
   }
-  while ((n + k) < (c + 1)) {
-    (f0, f1) = (f1 - f0, f0);
-    c -= 1;
+  repeat (k - 1) {
+    (a0, a1) = (a1, a0 + a1);
+    tp~tpush(a0);
   }
-  while (k > 0) {
-    tp = cons(f1, tp);
-    (f0, f1) = (f1 - f0, f0);
-    k -= 1;
+  if ((n + k) == 371) {
+    tp~tpush(a1);
+  }
+  else {
+    (a0, a1) = (a1, a0 + a1);
+    tp~tpush(a0);
   }
   return tp;
 }
