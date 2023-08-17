@@ -30,7 +30,7 @@ int dec_char(int chr, int shift){
   }
 }
 
-;; testable
+
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   int flag = -1;
   tuple stack = null();
