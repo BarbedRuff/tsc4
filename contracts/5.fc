@@ -6,24 +6,16 @@
   if(k == 0) { return tp; }
   int a0 = 0;
   int a1 = 1;
-  if (n + k < 371) {
-    repeat (n) {
-      (a0, a1) = (a1, a0 + a1);
-    }
-    repeat (k) {
-      tp~tpush(a0);
-      (a0, a1) = (a1, a0 + a1);
-    }
+  if(n == 0){
+    tp~tpush(0);
   }
-  else {
-    repeat (n - 1) {
-      (a0, a1) = (a1, a0 + a1);
-    }
-    repeat (k - 1) {
-      tp~tpush(a1);
-      (a0, a1) = (a1, a0 + a1);
-    }
+  repeat (n - 1) {
+    (a0, a1) = (a1, a0 + a1);
+  }
+  repeat (k - 1) {
     tp~tpush(a1);
+    (a0, a1) = (a1, a0 + a1);
   }
+  tp~tpush(a1);
   return tp;
 }
