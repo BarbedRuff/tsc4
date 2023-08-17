@@ -1,5 +1,3 @@
-(int) tlen (tuple t) asm "TLEN";
-
 () recv_internal() {
 }
 
