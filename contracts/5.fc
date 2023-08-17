@@ -12,7 +12,7 @@
     tp = cons(f0 + f1, tp);
     k -= 1;
   }
-  while ((n + k) != (c + 1)) {
+  while ((n + k) < (c + 1)) {
     (f0, f1) = (f1 - f0, f0);
     c -= 1;
   }
