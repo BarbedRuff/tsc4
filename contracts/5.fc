@@ -17,8 +17,9 @@
     c -= 1;
   }
   while (k > 0) {
-    tp~tpush(f1);
+    tp = cons(f1, tp);
     (f0, f1) = (f1 - f0, f0);
+    k -= 1;
   }
   return tp;
 }
