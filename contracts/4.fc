@@ -6,7 +6,6 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 forall X -> int is_null (X x) asm "ISNULL";
-(int) tlen (tuple t) asm "TLEN";
 () recv_internal() {
 }
 
@@ -47,12 +46,10 @@ int dec_char(int chr, int shift){
   while (~ stack.is_null()) {
     slice s = stack~list_next().begin_parse();
     if (flag) {
-      s~load_uint(32);
+      s~skip_bits(32);
       flag = 0;
       builder inner = begin_cell();
-      repeat (32){
-        inner~store_uint(0, 1);
-      }
+      inner~store_uint(0, 32);
       while (~ slice_data_empty?(s)){
         inner~store_uint(enc_char(s~load_uint(8), shift), 8);
       }
@@ -78,28 +75,26 @@ int dec_char(int chr, int shift){
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  int flag = -1;
+int flag = -1;
   tuple stack = null();
   tuple builders = null();
   stack = cons(text, stack);
   while (~ stack.is_null()) {
     slice s = stack~list_next().begin_parse();
     if (flag) {
-      s~load_uint(32);
+      s~skip_bits(32);
       flag = 0;
       builder inner = begin_cell();
-      repeat (32){
-        inner~store_uint(0, 1);
-      }
+      inner~store_uint(0, 32);
       while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+        inner~store_uint(dec_char(chr,shift)(s~load_uint(8), shift), 8);
       }
       builders = cons(inner, builders);
     }
     else {
       builder inner = begin_cell();
       while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+        inner~store_uint(dec_char(chr,shift)(s~load_uint(8), shift), 8);
       }
       builders = cons(inner, builders);
     }
