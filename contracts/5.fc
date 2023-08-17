@@ -19,8 +19,12 @@
     tp~tpush(a1);
   }
   else {
-    (a0, a1) = (a1, a0 + a1);
-    tp~tpush(a0);
+    if((n == 0) & (k == 1)) {
+      tp~tpush(0);
+    }
+    else {
+      tp~tpush(a1);
+    }
   }
   return tp;
 }
