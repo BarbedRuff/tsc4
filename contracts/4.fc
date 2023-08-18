@@ -67,7 +67,7 @@ int dec_char(int chr, int shift){
   s~skip_bits(32);
   builder inner = begin_cell();
   inner~store_uint(0, 32);
-  while (exit) {
+  do {
     repeat (slice_bits(s) / 8){
       inner~store_uint(dec_char(s~load_uint(8), shift), 8);
     }
@@ -79,7 +79,7 @@ int dec_char(int chr, int shift){
     else {
       exit = 0;
     }
-  }
+  } until (exit == 0)
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
