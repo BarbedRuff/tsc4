@@ -2,35 +2,6 @@ forall X -> int is_null (X x) asm "ISNULL";
 () recv_internal() {
 }
 
-int enc_char(int chr, int shift){
-  if ((chr <= 90) & (chr >= 65)) {
-    return (chr + shift - 65) % 26 + 65;
-  }
-  else {
-    if ((chr <= 122) & (chr >= 97)){
-      return (chr + shift - 97) % 26 + 97;
-    }
-    else {
-      return chr;
-    }
-  }
-}
-
-int dec_char(int chr, int shift){
-  if ((chr <= 90) & (chr >= 65)) {
-    return (chr - shift - 65) % 26 + 65;
-  }
-  else {
-    if ((chr <= 122) & (chr >= 97)){
-      return (chr - shift - 97) % 26 + 97;
-    }
-    else {
-      return chr;
-    }
-  }
-}
-
-
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   int flag = -1;
   int exit = -1;
@@ -41,7 +12,16 @@ int dec_char(int chr, int shift){
   inner~store_uint(0, 32);
   while (exit) {
     repeat (slice_bits(s) / 8){
-      inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+      int chr = s~load_uint(8);
+      if ((chr <= 90) & (chr >= 65)) {
+        chr = (chr + shift - 65) % 26 + 65;
+      }
+      else {
+        if ((chr <= 122) & (chr >= 97)){
+          chr = (chr + shift - 97) % 26 + 97;
+        }
+      }
+      inner~store_uint(chr, 8);
     }
     builders = cons(inner, builders);
     inner = begin_cell();
@@ -69,7 +49,16 @@ int dec_char(int chr, int shift){
   inner~store_uint(0, 32);
   do {
     repeat (slice_bits(s) / 8){
-      inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+      int chr = s~load_uint(8);
+      if ((chr <= 90) & (chr >= 65)) {
+        chr = (chr - shift - 65) % 26 + 65;
+      }
+      else {
+        if ((chr <= 122) & (chr >= 97)){
+          chr = (chr - shift - 97) % 26 + 97;
+        }
+      }
+      inner~store_uint(chr, 8);
     }
     builders = cons(inner, builders);
     inner = begin_cell();
