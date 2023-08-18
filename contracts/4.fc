@@ -1,4 +1,3 @@
-forall X -> int is_null (X x) asm "ISNULL";
 () recv_internal() {
 }
 
@@ -30,63 +29,44 @@ int dec_char(int chr, int shift){
   }
 }
 
-
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  int flag = -1;
-  int exit = -1;
-  tuple builders = null();
-  while (exit) {
-    slice s = text.begin_parse();
-    builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-    }
-    while (~ slice_data_empty?(s)){
-      inner~store_uint(enc_char(s~load_uint(8), shift), 8);
-    }
-    builders = cons(inner, builders);
-    if (s.slice_refs()) {
-      text = s~load_ref();
-    }
-    else {
-      exit = 0;
-    }
+  return enc(shift, text, -1);
+}
+
+(cell) enc(int shift, cell text, int flag) {
+  slice s = text.begin_parse();
+  builder inner = begin_cell();
+  if (flag) {
+    s~skip_bits(32);
+    flag = 0;
+    inner~store_uint(0, 32);
   }
-  builder ans = builders~list_next();
-  while (~ builders.is_null()) {
-    ans = builders~list_next().store_ref(ans.end_cell());
+  while (~ slice_data_empty?(s)){
+    inner~store_uint(enc_char(s~load_uint(8), shift), 8);
   }
-  return ans.end_cell();
+  if (s.slice_refs()){
+    inner = inner.store_ref(enc(shift, s~load_ref(), 0));
+  }
+  return inner.end_cell();
 }
 
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  int flag = -1;
-  int exit = -1;
-  tuple builders = null();
-  while (exit) {
-    slice s = text.begin_parse();
-    builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-    }
-    while (~ slice_data_empty?(s)){
-      inner~store_uint(dec_char(s~load_uint(8), shift), 8);
-    }
-    builders = cons(inner, builders);
-    if (s.slice_refs()) {
-      text = s~load_ref();
-    }
-    else {
-      exit = 0;
-    }
+  return dec(shift, text, -1);
+}
+
+(cell) dec(int shift, cell text, int flag) {
+  slice s = text.begin_parse();
+  builder inner = begin_cell();
+  if (flag) {
+    s~skip_bits(32);
+    flag = 0;
+    inner~store_uint(0, 32);
   }
-  builder ans = builders~list_next();
-  while (~ builders.is_null()) {
-    ans = builders~list_next().store_ref(ans.end_cell());
+  while (~ slice_data_empty?(s)){
+    inner~store_uint(dec_char(s~load_uint(8), shift), 8);
   }
-  return ans.end_cell();
+  if (s.slice_refs()){
+    inner = inner.store_ref(dec(shift, s~load_ref(), 0));
+  }
+  return inner.end_cell();
 }
