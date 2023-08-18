@@ -43,7 +43,7 @@ int dec_char(int chr, int shift){
       flag = 0;
       inner~store_uint(0, 32);
     }
-    while (~ slice_data_empty?(s)){
+    repeat (builder_bits(s) / 8){
       inner~store_uint(enc_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
@@ -73,7 +73,7 @@ int dec_char(int chr, int shift){
       flag = 0;
       inner~store_uint(0, 32);
     }
-    while (~ slice_data_empty?(s)){
+    while (builder_bits(s) / 8){
       inner~store_uint(dec_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
