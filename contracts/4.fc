@@ -35,7 +35,7 @@ int dec_char(int chr, int shift){
   int flag = -1;
   tuple builders = null();
   slice s = text.begin_parse();
-  while (s.slice_refs() | flag) {
+  do {
     if (flag) {
       s~skip_bits(32);
       flag = 0;
@@ -56,7 +56,7 @@ int dec_char(int chr, int shift){
     if(s.slice_refs()){
       s = s~load_ref().begin_parse();
     }
-  }
+  } until ((s.slice_refs() == 0) & (flag == 0));
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
@@ -69,7 +69,7 @@ int dec_char(int chr, int shift){
   int flag = -1;
   tuple builders = null();
   slice s = text.begin_parse();
-  while (s.slice_refs() | flag) {
+  do {
     if (flag) {
       s~skip_bits(32);
       flag = 0;
@@ -90,7 +90,7 @@ int dec_char(int chr, int shift){
     if(s.slice_refs()){
       s = s~load_ref().begin_parse();
     }
-  }
+  } until ((s.slice_refs() == 0) & (flag == 0));
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
