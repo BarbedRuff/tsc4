@@ -33,46 +33,25 @@ int dec_char(int chr, int shift){
 
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   int flag = -1;
+  tuple stack = null();
   tuple builders = null();
-  slice s = text.begin_parse();
-  do {
+  stack = cons(text, stack);
+  while (~ stack.is_null()) {
+    slice s = stack~list_next().begin_parse();
     builder inner = begin_cell();
     if (flag) {
       s~skip_bits(32);
       flag = 0;
       inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
-      }
     }
-    else {
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
-      }
+    while (~ slice_data_empty?(s)){
+      inner~store_uint(enc_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
-    if (s.slice_refs() != 0) {
-      s = s~load_ref().begin_parse();
+    if (s.slice_refs()) {
+      stack = cons(s~load_ref(), stack);
     }
-  } until (s.slice_refs() == 0);
-  builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
-      }
-    }
-    else {
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
-      }
-    }
-    builders = cons(inner, builders);
-    if (s.slice_refs() != 0) {
-      s = s~load_ref().begin_parse();
-    }
+  }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
@@ -80,52 +59,30 @@ int dec_char(int chr, int shift){
   return ans.end_cell();
 }
 
-;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   int flag = -1;
+  tuple stack = null();
   tuple builders = null();
-  slice s = text.begin_parse();
-  do {
+  stack = cons(text, stack);
+  while (~ stack.is_null()) {
+    slice s = stack~list_next().begin_parse();
     builder inner = begin_cell();
     if (flag) {
       s~skip_bits(32);
       flag = 0;
       inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
-      }
     }
-    else {
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
-      }
+    while (~ slice_data_empty?(s)){
+      inner~store_uint(dec_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
-    if (s.slice_refs() != 0) {
-      s = s~load_ref().begin_parse();
+    if (s.slice_refs()) {
+      stack = cons(s~load_ref(), stack);
     }
-  } until ((s.slice_refs() == 0));
-  builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
-      }
-    }
-    else {
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
-      }
-    }
-    builders = cons(inner, builders);
-    if (s.slice_refs() != 0) {
-      s = s~load_ref().begin_parse();
-    }
+  }
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
-      ans = builders~list_next().store_ref(ans.end_cell());
+    ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();
 }
