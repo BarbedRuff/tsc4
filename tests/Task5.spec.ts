@@ -36,9 +36,8 @@ describe('Task5', () => {
         // blockchain and task5 are ready to use
     });
     it('fib', async () => {
-        let res = await blockchain.runGetMethod(task5.address, 'fibonacci_sequence',
-        [{"type": "int", "value":341n},
-        {"type": "int", "value":30n}
+        let res = await blockchain.runGetMethod(task5.address, 'fib',
+        [{"type": "int", "value":369n}
         ]
         );
         console.log(res.stack.at(0));

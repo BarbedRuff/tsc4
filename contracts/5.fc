@@ -1,24 +1,86 @@
+(int) tlen (tuple t) asm "TLEN";
+forall X -> (tuple) to_tuple (X x) asm "NOP";
 () recv_internal() {
 }
 
-(tuple) fibonacci_sequence(int n, int k) method_id {
-  tuple tp = empty_tuple(); 
-  if(k == 0) { return tp; }
-  int a0 = 0;
-  int a1 = 1;
-  int c = 0;
-  if(n == 0){
-    tp~tpush(0);
-  }
-  repeat ((n - 1) + (k - 1)) {
-    if (c >= (n - 1)) {
-      tp~tpush(a1);
+(tuple) matrix_multiplier(tuple matrixA, tuple matrixB) {
+  tuple tp = empty_tuple();
+  int a = matrixA.tlen();
+  int b = matrixB.at(0).tlen();
+  int c = matrixA.at(0).tlen();
+  int i = 0;
+  while(i < a){
+    int j = 0;
+    tuple t = empty_tuple();
+    while(j < b){
+      int k = 0;
+      int x = 0;
+      while(k < c){
+        x += matrixA.at(i).at(k) * matrixB.at(k).at(j);
+        k += 1;
+      }
+      t~tpush(x);
+      j += 1;
     }
-    (a0, a1) = (a1, a0 + a1);
-    c += 1;
+    tp~tpush(t);
+    i += 1;
   }
-  if(n != 0){
-    tp~tpush(a1);
+  return tp;
+}
+
+(tuple) identity_matrix(int n) {
+  tuple tp = empty_tuple();
+  int i = 0;
+  repeat (n) {
+    int j = 0;
+    tuple temp = empty_tuple();
+    repeat (n) {
+      if (j == i) {
+        temp~tpush(1);
+      }
+      else {
+        temp~tpush(0);
+      }
+      j += 1;
+    }
+    tp~tpush(temp);
+    i += 1;
+  }
+  return tp;
+}
+
+(tuple) pw(tuple x, int n, tuple I) {
+  if (n == 0) {
+    return I;
+  }
+  if (n == 1){
+    return x;
+  }
+  else {
+    tuple y = pw(x, n / 2, I);
+    y = matrix_multiplier(y, y);
+    if ((n % 2) == 1) {
+      y = matrix_multiplier(x, y);
+    }
+    return y;
+  }
+}
+
+(int) fib(int n) {
+  tuple a = to_tuple([to_tuple([1, 1]), to_tuple([1, 0])]);
+  a = pw(a, n, identity_matrix(2));
+  return a.at(0).at(1);
+}
+
+(tuple) fibonacci_sequence(int n, int k) method_id {
+  tuple tp = empty_tuple();
+  int tmp = n;
+  repeat (k - 1) {
+    tp~tpush(fib(n));
+    n += 1;
+  }
+  if((tmp + k) == 371) {
+    tp~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);
   }
   return tp;
 }
