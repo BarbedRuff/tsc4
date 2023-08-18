@@ -6,15 +6,16 @@
   if(k == 0) { return tp; }
   int a0 = 0;
   int a1 = 1;
+  int c = 0;
   if(n == 0){
     tp~tpush(0);
   }
-  repeat (n - 1) {
+  repeat ((n - 1) + (k - 1)) {
+    if (c >= (n - 1)) {
+      tp~tpush(a1);
+    }
     (a0, a1) = (a1, a0 + a1);
-  }
-  repeat (k - 1) {
-    tp~tpush(a1);
-    (a0, a1) = (a1, a0 + a1);
+    c += 1;
   }
   if(n != 0){
     tp~tpush(a1);
