@@ -7,14 +7,7 @@ int min(int x, int y) asm "MIN";
 () recv_internal() {
 }
 
-(builder) store(int x, builder build) {
-    int ln = 0;
-    if (x == 0) {
-        ln = 1;
-    }
-    else {
-        ln = bits(x);
-    }
+(builder) store(int x, builder build, int ln) {
     if(builder_bits(build) + ln > 1023){
         builders = cons(build, builders);
         build = begin_cell();
@@ -61,7 +54,7 @@ int min(int x, int y) asm "MIN";
                     lntostore += ((old_bufer_len + slide) - bits(bufer));
                 }
             }
-            build = store(tostore, build);
+            build = store(tostore, build, lntostore);
             tostore = 0;
             lntostore = 0;
         }
