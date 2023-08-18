@@ -2,59 +2,29 @@ forall X -> int is_null (X x) asm "ISNULL";
 () recv_internal() {
 }
 
-int enc_char(int chr, int shift){
-  if ((chr <= 90) & (chr >= 65)) {
-    return (chr + shift - 65) % 26 + 65;
-  }
-  else {
-    if ((chr <= 122) & (chr >= 97)){
-      return (chr + shift - 97) % 26 + 97;
-    }
-    else {
-      return chr;
-    }
-  }
-}
-
-int dec_char(int chr, int shift){
-  if ((chr <= 90) & (chr >= 65)) {
-    return (chr - shift - 65) % 26 + 65;
-  }
-  else {
-    if ((chr <= 122) & (chr >= 97)){
-      return (chr - shift - 97) % 26 + 97;
-    }
-    else {
-      return chr;
-    }
-  }
-}
-
-
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  int flag = -1;
   tuple stack = null();
   tuple builders = null();
+  builder inner = begin_cell();
   stack = cons(text, stack);
   while (~ stack.is_null()) {
     slice s = stack~list_next().begin_parse();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      builder inner = begin_cell();
-      inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+    while (~ slice_data_empty?(s)){
+      int chr = s~load_uint(8);
+      if ((chr <= 90) & (chr >= 65)) {
+        chr =  (chr + shift - 65) % 26 + 65;
       }
-      builders = cons(inner, builders);
-    }
-    else {
-      builder inner = begin_cell();
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(enc_char(s~load_uint(8), shift), 8);
+      else {
+        if ((chr <= 122) & (chr >= 97)){
+          chr = (chr + shift - 97) % 26 + 97;
+        }
+        else {
+          chr = chr;
+        }
       }
-      builders = cons(inner, builders);
+      inner~store_uint(chr, 8);
     }
+    builders = cons(inner, builders);
     if (s.slice_refs()) {
       stack = cons(s~load_ref(), stack);
     }
@@ -66,31 +36,29 @@ int dec_char(int chr, int shift){
   return ans.end_cell();
 }
 
-;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  int flag = -1;
   tuple stack = null();
   tuple builders = null();
+  builder inner = begin_cell();
   stack = cons(text, stack);
   while (~ stack.is_null()) {
     slice s = stack~list_next().begin_parse();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      builder inner = begin_cell();
-      inner~store_uint(0, 32);
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+    while (~ slice_data_empty?(s)){
+      int chr = s~load_uint(8);
+      if ((chr <= 90) & (chr >= 65)) {
+        chr = (chr - shift - 65) % 26 + 65;
       }
-      builders = cons(inner, builders);
-    }
-    else {
-      builder inner = begin_cell();
-      while (~ slice_data_empty?(s)){
-        inner~store_uint(dec_char(s~load_uint(8), shift), 8);
+      else {
+        if ((chr <= 122) & (chr >= 97)){
+          chr = (chr - shift - 97) % 26 + 97;
+        }
+        else {
+          chr = chr;
+        }
       }
-      builders = cons(inner, builders);
+      inner~store_uint(chr, 8);
     }
+    builders = cons(inner, builders);
     if (s.slice_refs()) {
       stack = cons(s~load_ref(), stack);
     }
