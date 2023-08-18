@@ -47,12 +47,10 @@ describe('Task3', () => {
         cell1.storeBit(1);
         cell.storeRef(cell1.endCell());
         console.log(cell.endCell());
-        // let res = await blockchain.runGetMethod(task3.address, 'find_and_replace', [
-        //     {'type': 'int', 'value': 53n},
-        //     {'type': 'int', 'value': 10249n},
-        //     {'type': 'cell', 'cell': cell.endCell()}
-        // ]);
-        let res = await blockchain.runGetMethod(task3.address, 'test', [
+        let res = await blockchain.runGetMethod(task3.address, 'find_and_replace', [
+            {'type': 'int', 'value': 53n},
+            {'type': 'int', 'value': 10249n},
+            {'type': 'cell', 'cell': cell.endCell()}
         ]);
         console.log(res.stack.at(0));
     });

@@ -2,72 +2,76 @@ global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
 int pow2(int x) asm "POW2";
 int bits(int number) asm "UBITSIZE";
-
-(builder) store(int x, builder build) {
-  int ln = 0;
-  if (x == 0) {
-    ln = 1;
-  }
-  else {
-    ln = bits(x);
-  }
-  if(builder_bits(build) + ln > 1023){
-    builders = cons(build, builders);
-    build = begin_cell();
-  }
-  build~store_uint(x, ln);
-  return build;
-}
+int min(int x, int y) asm "MIN";
 
 () recv_internal() {
 }
 
-;; testable
+(builder) store(int x, builder build) {
+    int ln = 0;
+    if (x == 0) {
+        ln = 1;
+    }
+    else {
+        ln = bits(x);
+    }
+    if(builder_bits(build) + ln > 1023){
+        builders = cons(build, builders);
+        build = begin_cell();
+    }
+    build~store_uint(x, ln);
+    return build;
+}
+
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  int flag_len = bits(flag);
-  builder build = begin_cell();
-  builders = null();
-  int bufer = 0;
-  tuple stack = null();
-  stack = cons(linked_list, stack);
-  while (~ stack.is_null()) {
-    slice s = stack~list_next().begin_parse();
-    while (~ slice_data_empty?(s)){
-      int bit = s~load_uint(1);
-      if ((bufer == 0) & (bit == 0)) {
-        build = store(bit, build);
-      }
-      else {
-        bufer = bufer << 1;
-        bufer += bit;
-      }
-      if ((flag_len == bits(bufer)) & (bufer != 0)) {
-        if (bufer == flag) {
-          build = store(value, build);
-          bufer = 0;
+    int flag_len = bits(flag);
+    builder build = begin_cell();
+    builders = null();
+    int bufer = 0;
+    int tostore = 0;
+    tuple stack = null();
+    stack = cons(linked_list, stack);
+    while (~ stack.is_null()) {
+        slice s = stack~list_next().begin_parse();
+        while (~ slice_data_empty?(s)){
+            int slide = (min(s.slice_bits(), (flag_len - bits(bufer))));
+            int old_bufer_len = bits(bufer);
+            bufer = bufer << slide;
+            bufer += s~load_uint(slide);
+            if (flag_len == bits(bufer)) {
+                if (bufer == flag) {
+                    build = store(value, build);
+                    bufer = 0;
+                }
+                else {
+                    build = store((bufer >> (flag_len - 1)), build);
+                    bufer = bufer - pow2(flag_len - 1);
+                    repeat (flag_len - bits(bufer) - 1) {
+                        build = store(0, build);
+                    }
+                }
+            }
+            else {
+                if (bits(bufer) != (old_bufer_len + slide)) {
+                    repeat ((old_bufer_len + slide) - bits(bufer)) {
+                        build = store(0, build);
+                    }
+                }
+            }
         }
-        else {
-          build = store((bufer >> (flag_len - 1)), build);
-          bufer = bufer - pow2(flag_len - 1);
-          repeat (flag_len - bits(bufer) - 1) {
-            build = store(0, build);
-          }
+        if (s.slice_refs()) {
+            stack = cons(s~load_ref(), stack);
         }
-      }
     }
-    if (s.slice_refs()) {
-      stack = cons(s~load_ref(), stack);
+    if (bufer != 0) {
+        build = store(bufer, build);
     }
-  }
-  if (bufer != 0) {
-    build = store(bufer, build);
-  }
-  if ((builders.is_null()) | (builder_bits(build) != 0)) {
-    builders = cons(build, builders);
-  }
-  builder ans = builders~list_next();
-  while (~ builders.is_null()) {
-    ans = builders~list_next().store_ref(ans.end_cell());
-  }
-  return ans.end_cell();
+    if ((builders.is_null()) | (builder_bits(build) != 0)) {
+        builders = cons(build, builders);
+    }
+    builder ans = builders~list_next();
+    while (~ builders.is_null()) {
+        ans = builders~list_next().store_ref(ans.end_cell());
+    }
+    return ans.end_cell();
 }
