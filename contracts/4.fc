@@ -36,27 +36,25 @@ int dec_char(int chr, int shift){
   tuple builders = null();
   slice s = text.begin_parse();
   do {
+    builder inner = begin_cell();
     if (flag) {
       s~skip_bits(32);
       flag = 0;
-      builder inner = begin_cell();
       inner~store_uint(0, 32);
       while (~ slice_data_empty?(s)){
         inner~store_uint(enc_char(s~load_uint(8), shift), 8);
       }
-      builders = cons(inner, builders);
     }
     else {
-      builder inner = begin_cell();
       while (~ slice_data_empty?(s)){
         inner~store_uint(enc_char(s~load_uint(8), shift), 8);
       }
-      builders = cons(inner, builders);
     }
-    if(s.slice_refs()){
+    builders = cons(inner, builders);
+    if (s.slice_refs()) {
       s = s~load_ref().begin_parse();
     }
-  } until ((s.slice_refs() == 0) & (flag == 0));
+  } until (s.slice_refs() == 0);
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
@@ -70,27 +68,25 @@ int dec_char(int chr, int shift){
   tuple builders = null();
   slice s = text.begin_parse();
   do {
+    builder inner = begin_cell();
     if (flag) {
       s~skip_bits(32);
       flag = 0;
-      builder inner = begin_cell();
       inner~store_uint(0, 32);
       while (~ slice_data_empty?(s)){
         inner~store_uint(dec_char(s~load_uint(8), shift), 8);
       }
-      builders = cons(inner, builders);
     }
     else {
-      builder inner = begin_cell();
       while (~ slice_data_empty?(s)){
         inner~store_uint(dec_char(s~load_uint(8), shift), 8);
       }
-      builders = cons(inner, builders);
     }
-    if(s.slice_refs()){
+    builders = cons(inner, builders);
+    if (s.slice_refs()) {
       s = s~load_ref().begin_parse();
     }
-  } until ((s.slice_refs() == 0) & (flag == 0));
+  } until (s.slice_refs() == 0);
   builder ans = builders~list_next();
   while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
