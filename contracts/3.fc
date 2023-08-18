@@ -22,7 +22,6 @@ int min(int x, int y) asm "MIN";
     builders = null();
     int bufer = 0;
     int tostore = 0;
-    int lntostore = 0;
     tuple stack = null();
     stack = cons(linked_list, stack);
     while (~ stack.is_null()) {
@@ -34,33 +33,27 @@ int min(int x, int y) asm "MIN";
             bufer += s~load_uint(slide);
             if (flag_len == bits(bufer)) {
                 if (bufer == flag) {
-                    tostore = tostore << bits(value);
-                    tostore += value;
-                    lntostore += bits(value);
+                    build = store(value, build, bits(value));
                     bufer = 0;
                 }
                 else {
-                    tostore = tostore << 1;
-                    tostore += (bufer >> (flag_len - 1));
-                    lntostore += 1;
-                    bufer = bufer - pow2(flag_len - 1);
-                    tostore = tostore << (flag_len - bits(bufer) - 1);
-                    lntostore += (flag_len - bits(bufer) - 1);
+                    int tmp = bufer - pow2(flag_len - 1);
+                    int vl = bufer >> bits(tmp);
+                    build = store(vl, build, bits(vl));
                 }
             }
             else {
                 if (bits(bufer) != (old_bufer_len + slide)) {
-                    tostore = tostore << ((old_bufer_len + slide) - bits(bufer));
-                    lntostore += ((old_bufer_len + slide) - bits(bufer));
+                  build = store(0, build, ((old_bufer_len + slide) - bits(bufer)));
                 }
             }
-            build = store(tostore, build, lntostore);
-            tostore = 0;
-            lntostore = 0;
         }
         if (s.slice_refs()) {
             stack = cons(s~load_ref(), stack);
         }
+    }
+    if (bufer != 0) {
+        build = store(bufer, build);
     }
     if ((builders.is_null()) | (builder_bits(build) != 0)) {
         builders = cons(build, builders);
