@@ -5,7 +5,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-(int) find_branch_by_hash(int hash, cell tree) method_id {
+(cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
   stack~push_back(tree);
   while (~ stack.is_null()) {
