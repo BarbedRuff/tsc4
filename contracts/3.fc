@@ -1,4 +1,3 @@
-global tuple builders;
 forall X -> int is_null (X x) asm "ISNULL";
 int pow2(int x) asm "POW2";
 int bits(int number) asm "UBITSIZE";
@@ -7,19 +6,10 @@ int min(int x, int y) asm "MIN";
 () recv_internal() {
 }
 
-(builder) store(int x, builder build, int ln) {
-    if(builder_bits(build) + ln > 1023){
-        builders = cons(build, builders);
-        build = begin_cell();
-    }
-    build~store_uint(x, ln);
-    return build;
-}
-
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
     int flag_len = bits(flag);
     builder build = begin_cell();
-    builders = null();
+    tuple builders = null();
     int bufer = 0;
     int tostore = 0;
     tuple stack = null();
@@ -33,19 +23,31 @@ int min(int x, int y) asm "MIN";
             bufer += s~load_uint(slide);
             if (flag_len == bits(bufer)) {
                 if (bufer == flag) {
-                    build = store(value, build, bits(value));
+                    if(builder_bits(build) + bits(value) > 1023){
+                      builders = cons(build, builders);
+                      build = begin_cell();
+                    }
+                    build~store_uint(value, bits(value));
                     bufer = 0;
                 }
                 else {
                     int tmp = bufer - pow2(flag_len - 1);
                     int vl = bufer >> bits(tmp);
-                    build = store(vl, build, bits(vl));
+                    if(builder_bits(build) + bits(vl) > 1023){
+                        builders = cons(build, builders);
+                        build = begin_cell();
+                    }
+                    build~store_uint(vl, bits(vl));
                     bufer = bufer - pow2(flag_len - 1);
                 }
             }
             else {
                 if (bits(bufer) != (old_bufer_len + slide)) {
-                  build = store(0, build, ((old_bufer_len + slide) - bits(bufer)));
+                      if(builder_bits(build) + ((old_bufer_len + slide) - bits(bufer)) > 1023){
+                        builders = cons(build, builders);
+                        build = begin_cell();
+                      }
+                      build~store_uint(0, ((old_bufer_len + slide) - bits(bufer)));
                 }
             }
         }
@@ -54,7 +56,11 @@ int min(int x, int y) asm "MIN";
         }
     }
     if (bufer != 0) {
-        build = store(bufer, build, bits(bufer));
+        if(builder_bits(build) + bits(bufer) > 1023){
+          builders = cons(build, builders);
+          build = begin_cell();
+        }
+        build~store_uint(bufer, bits(bufer));
     }
     if ((builders.is_null()) | (builder_bits(build) != 0)) {
         builders = cons(build, builders);
