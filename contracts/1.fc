@@ -8,9 +8,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
-  stack~push_back(tree);
   do {
-    tree = stack~pop_back();
     if(tree.cell_hash() == hash){
       return tree;
     }
@@ -18,6 +16,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     repeat (kek.slice_refs()) {
       stack~push_back(kek~load_ref());
     }
+    tree = stack~pop_back();
   } until (stack.is_null()); 
   return begin_cell().end_cell();
 }
