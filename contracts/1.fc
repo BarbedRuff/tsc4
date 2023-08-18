@@ -1,24 +1,19 @@
 forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-
 () recv_internal() {
 }
 
+;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
-  if (tree.cell_hash() == hash) {
-    return tree;
-  }
-  stack~push_back(tree);
+  stack = cons(tree, stack);
   while (~ stack.is_null()) {
-    slice s = stack~pop_back().begin_parse();
-    repeat (s.slice_refs()) {
-      cell m = s~load_ref();
-      if (m.cell_hash() == hash) {
-        return m;
-      }
-      stack~push_back(m);
+    cell s = stack~list_next();
+    if(s.cell_hash() == hash){
+      return s;
+    }
+    slice kek = s.begin_parse();
+    repeat (kek.slice_refs()) {
+      stack = cons(kek~load_ref(), stack);
     }
   }
   return begin_cell().end_cell();
