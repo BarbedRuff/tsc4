@@ -53,7 +53,7 @@ int min(int x, int y) asm "MIN";
         }
     }
     if (bufer != 0) {
-        build = store(bufer, build);
+        build = store(bufer, build, bits(bufer));
     }
     if ((builders.is_null()) | (builder_bits(build) != 0)) {
         builders = cons(build, builders);
