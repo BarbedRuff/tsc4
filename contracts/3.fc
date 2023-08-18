@@ -7,14 +7,7 @@ int min(int x, int y) asm "MIN";
 () recv_internal() {
 }
 
-(builder) store(int x, builder build) {
-    int ln = 0;
-    if (x == 0) {
-        ln = 1;
-    }
-    else {
-        ln = bits(x);
-    }
+(builder) store(int x, builder build, int ln) {
     if(builder_bits(build) + ln > 1023){
         builders = cons(build, builders);
         build = begin_cell();
@@ -29,6 +22,7 @@ int min(int x, int y) asm "MIN";
     builders = null();
     int bufer = 0;
     int tostore = 0;
+    int lntostore = 0;
     tuple stack = null();
     stack = cons(linked_list, stack);
     while (~ stack.is_null()) {
@@ -40,22 +34,45 @@ int min(int x, int y) asm "MIN";
             bufer += s~load_uint(slide);
             if (flag_len == bits(bufer)) {
                 if (bufer == flag) {
-                    build = store(value, build);
+                    ifnot (bits(tostore) + bits(value) <= 256) {
+                      build = store(tostore, build, lntostore);
+                      tostore = 0;
+                      lntostore = 0;
+                    }
+                    tostore = tostore << bits(value);
+                    tostore += value;
+                    lntostore += bits(value);
                     bufer = 0;
                 }
                 else {
-                    build = store((bufer >> (flag_len - 1)), build);
-                    bufer = bufer - pow2(flag_len - 1);
-                    repeat (flag_len - bits(bufer) - 1) {
-                        build = store(0, build);
+                    ifnot (bits(tostore) + 1 <= 256) {
+                      build = store(tostore, build, lntostore);
+                      tostore = 0;
+                      lntostore = 0;
                     }
+                    tostore = tostore << 1;
+                    tostore += (bufer >> (flag_len - 1));
+                    lntostore += 1;
+
+                    bufer = bufer - pow2(flag_len - 1);
+                    ifnot (bits(tostore) + (flag_len - bits(bufer) - 1) <= 256) {
+                      build = store(tostore, build, lntostore);
+                      tostore = 0;
+                      lntostore = 0;
+                    }
+                    tostore = tostore << (flag_len - bits(bufer) - 1);
+                    lntostore += (flag_len - bits(bufer) - 1);
                 }
             }
             else {
                 if (bits(bufer) != (old_bufer_len + slide)) {
-                    repeat ((old_bufer_len + slide) - bits(bufer)) {
-                        build = store(0, build);
+                    ifnot (bits(tostore) + ((old_bufer_len + slide) - bits(bufer)) <= 256) {
+                      build = store(tostore, build, lntostore);
+                      tostore = 0;
+                      lntostore = 0;
                     }
+                    tostore = tostore << ((old_bufer_len + slide) - bits(bufer));
+                    lntostore += ((old_bufer_len + slide) - bits(bufer));
                 }
             }
         }
@@ -63,8 +80,8 @@ int min(int x, int y) asm "MIN";
             stack = cons(s~load_ref(), stack);
         }
     }
-    if (bufer != 0) {
-        build = store(bufer, build);
+    if (tostore != 0) {
+        build = store(tostore, build, lntostore);
     }
     if ((builders.is_null()) | (builder_bits(build) != 0)) {
         builders = cons(build, builders);
