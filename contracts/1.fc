@@ -6,7 +6,12 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 }
 
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  return tree;
+  if(tree.cell_hash() == hash) {
+    return tree;
+  }
+  else {
+    return begin_cell().end_cell();
+  }
   ;; tuple stack = null();
   ;; stack~push_back(tree);
   ;; while (~ stack.is_null()) {
