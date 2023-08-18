@@ -1,4 +1,4 @@
-forall X -> int is_null (X x) asm "ISNULL";
+(int) tlen (tuple t) asm "TLEN";
 () recv_internal() {
 }
 
@@ -55,7 +55,7 @@ int dec_char(int chr, int shift){
     }
   }
   builder ans = builders~list_next();
-  while (~ builders.is_null()) {
+  repeat (builders.tlen() - 1) {
     ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();
@@ -85,7 +85,7 @@ int dec_char(int chr, int shift){
     }
   }
   builder ans = builders~list_next();
-  while (~ builders.is_null()) {
+  repeat (builders.tlen() - 1) {
     ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();
