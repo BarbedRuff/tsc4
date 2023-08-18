@@ -1,4 +1,4 @@
-(int) tlen (tuple t) asm "TLEN";
+forall X -> int is_null (X x) asm "ISNULL";
 () recv_internal() {
 }
 
@@ -35,27 +35,25 @@ int dec_char(int chr, int shift){
   int flag = -1;
   int exit = -1;
   tuple builders = null();
+  slice s = text.begin_parse();
+  s~skip_bits(32);
+  builder inner = begin_cell();
+  inner~store_uint(0, 32);
   while (exit) {
-    slice s = text.begin_parse();
-    builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-    }
     repeat (slice_bits(s) / 8){
       inner~store_uint(enc_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
+    inner = begin_cell();
     if (s.slice_refs()) {
-      text = s~load_ref();
+      s = s~load_ref().begin_parse();
     }
     else {
       exit = 0;
     }
   }
   builder ans = builders~list_next();
-  repeat (builders.tlen() - 1) {
+  while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();
@@ -65,27 +63,25 @@ int dec_char(int chr, int shift){
   int flag = -1;
   int exit = -1;
   tuple builders = null();
+  slice s = text.begin_parse();
+  s~skip_bits(32);
+  builder inner = begin_cell();
+  inner~store_uint(0, 32);
   while (exit) {
-    slice s = text.begin_parse();
-    builder inner = begin_cell();
-    if (flag) {
-      s~skip_bits(32);
-      flag = 0;
-      inner~store_uint(0, 32);
-    }
     repeat (slice_bits(s) / 8){
       inner~store_uint(dec_char(s~load_uint(8), shift), 8);
     }
     builders = cons(inner, builders);
+    inner = begin_cell();
     if (s.slice_refs()) {
-      text = s~load_ref();
+      s = s~load_ref().begin_parse();
     }
     else {
       exit = 0;
     }
   }
   builder ans = builders~list_next();
-  repeat (builders.tlen() - 1) {
+  while (~ builders.is_null()) {
     ans = builders~list_next().store_ref(ans.end_cell());
   }
   return ans.end_cell();

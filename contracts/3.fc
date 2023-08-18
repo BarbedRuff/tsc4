@@ -1,4 +1,4 @@
-(int) tlen (tuple t) asm "TLEN";
+forall X -> int is_null (X x) asm "ISNULL";
 int pow2(int x) asm "POW2";
 int bits(int number) asm "UBITSIZE";
 int min(int x, int y) asm "MIN";
@@ -12,7 +12,6 @@ int min(int x, int y) asm "MIN";
     builder build = begin_cell();
     tuple builders = null();
     int bufer = 0;
-    int tostore = 0;
     while (exit) {
         slice s = linked_list.begin_parse();
         while (~ slice_data_empty?(s)){
@@ -64,11 +63,11 @@ int min(int x, int y) asm "MIN";
         }
         build~store_uint(bufer, bits(bufer));
     }
-    if ((builders.tlen() == 0) | (builder_bits(build) != 0)) {
+    if ((builders.is_null()) | (builder_bits(build) != 0)) {
         builders = cons(build, builders);
     }
     builder ans = builders~list_next();
-    repeat (builders.tlen() - 1) {
+    while (~ builders.is_null()) {
         ans = builders~list_next().store_ref(ans.end_cell());
     }
     return ans.end_cell();
