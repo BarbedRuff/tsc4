@@ -40,6 +40,7 @@ int min(int x, int y) asm "MIN";
                     int tmp = bufer - pow2(flag_len - 1);
                     int vl = bufer >> bits(tmp);
                     build = store(vl, build, bits(vl));
+                    bufer = bufer - pow2(flag_len - 1);
                 }
             }
             else {
