@@ -5,18 +5,19 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 () recv_internal() {
 }
 
-(cell) find_branch_by_hash(int hash, cell tree) method_id {
-  tuple stack = null();
-  stack~push_back(tree);
-  do {
-    tree = stack~pop_back();
-    if(tree.cell_hash() == hash){
-      return tree;
-    }
-    slice kek = tree.begin_parse();
-    repeat (kek.slice_refs()) {
-      stack~push_back(kek~load_ref());
-    }
-  } until (~ stack.is_null());
-  return begin_cell().end_cell();
+(int) find_branch_by_hash(int hash, cell tree) method_id {
+  return tree;
+  ;; tuple stack = null();
+  ;; stack~push_back(tree);
+  ;; while (~ stack.is_null()) {
+  ;;   cell s = stack~pop_back();
+  ;;   if(s.cell_hash() == hash){
+  ;;     return s;
+  ;;   }
+  ;;   slice kek = s.begin_parse();
+  ;;   repeat (kek.slice_refs()) {
+  ;;     stack~push_back(kek~load_ref());
+  ;;   }
+  ;; }
+  ;; return begin_cell().end_cell();
 }

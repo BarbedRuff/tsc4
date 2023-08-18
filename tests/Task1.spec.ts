@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Cell, toNano, Builder } from 'ton-core';
 import { Task1 } from '../wrappers/Task1';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -32,7 +32,24 @@ describe('Task1', () => {
     });
 
     it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and task1 are ready to use
+        let cell = new Builder();
+        let cell1 = new Builder();
+        cell1.storeBit(1);
+        let cell2 = new Builder();
+        cell1.storeBit(1);
+        cell1.storeBit(1);
+        cell1.storeBit(1);
+        cell1.storeBit(1);
+        let cell3 = new Builder();
+        let cell4 = new Builder();
+        cell.storeRef(cell1);
+        cell.storeRef(cell2);
+        cell.storeRef(cell3);
+        cell.storeRef(cell4);
+        let res = await blockchain.runGetMethod(task1.address, 'find_branch_by_hash',
+        [{"type": "int", "value":1n},
+        {"type": "cell", "cell": cell.endCell()}]
+        );
+        console.log(res.stack.at(0));
     });
 });
