@@ -38,13 +38,15 @@ describe('Task4', () => {
 
     it('caesar', async () => {
         let cell = new Builder();
-        let st = '0100100101100110011011010110110101010000001000000111100001110000011100110110110101100101';
-        for(var i = 0; i < 32; i++){
+        for(var i = 0; i < 1016; i++){
             cell.storeBit(0);
         }
+        let cell1 = new Builder();
+        let st = '0100100101100110011011010110110101010000001000000111100001110000011100110110110101100101';
         for(var i = 0; i < st.length; i++){
-            cell.storeBit(st[i].charCodeAt(0) - 48);
+            cell1.storeBit(st[i].charCodeAt(0) - 48);
         }
+        cell.storeRef(cell1.endCell());
         console.log(cell.endCell());
         let res = await blockchain.runGetMethod(task4.address, 'caesar_cipher_decrypt', [
             {'type': 'int', 'value': 1n},
