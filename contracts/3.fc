@@ -12,8 +12,8 @@ int min(int x, int y) asm "MIN";
     builder build = begin_cell();
     tuple builders = null();
     int bufer = 0;
+    slice s = linked_list.begin_parse();
     while (exit) {
-        slice s = linked_list.begin_parse();
         while (~ slice_data_empty?(s)){
             int slide = (min(s.slice_bits(), (flag_len - bits(bufer))));
             int old_bufer_len = bits(bufer);
@@ -50,7 +50,7 @@ int min(int x, int y) asm "MIN";
             }
         }
         if (s.slice_refs()) {
-            linked_list = s~load_ref();
+            s = s~load_ref().begin_parse();
         }
         else {
             exit = 0;
