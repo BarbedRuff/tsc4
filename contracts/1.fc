@@ -15,6 +15,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     }
     slice kek = s.begin_parse();
     stack~push_back(kek~load_ref());
+    if(s.slice_refs()) {
+      stack~push_back(kek~load_ref());
+    }
   }
   return begin_cell().end_cell();
 }
