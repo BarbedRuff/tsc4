@@ -8,14 +8,13 @@ int min(int x, int y) asm "MIN";
 
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
     int flag_len = bits(flag);
+    int exit = -1;
     builder build = begin_cell();
     tuple builders = null();
     int bufer = 0;
     int tostore = 0;
-    tuple stack = null();
-    stack = cons(linked_list, stack);
-    while (~ stack.is_null()) {
-        slice s = stack~list_next().begin_parse();
+    while (exit) {
+        slice s = linked_list.begin_parse();
         while (~ slice_data_empty?(s)){
             int slide = (min(s.slice_bits(), (flag_len - bits(bufer))));
             int old_bufer_len = bits(bufer);
@@ -24,8 +23,8 @@ int min(int x, int y) asm "MIN";
             if (flag_len == bits(bufer)) {
                 if (bufer == flag) {
                     if(builder_bits(build) + bits(value) > 1023){
-                      builders = cons(build, builders);
-                      build = begin_cell();
+                        builders = cons(build, builders);
+                        build = begin_cell();
                     }
                     build~store_uint(value, bits(value));
                     bufer = 0;
@@ -43,22 +42,25 @@ int min(int x, int y) asm "MIN";
             }
             else {
                 if (bits(bufer) != (old_bufer_len + slide)) {
-                      if(builder_bits(build) + ((old_bufer_len + slide) - bits(bufer)) > 1023){
+                        if(builder_bits(build) + ((old_bufer_len + slide) - bits(bufer)) > 1023){
                         builders = cons(build, builders);
                         build = begin_cell();
-                      }
-                      build~store_uint(0, ((old_bufer_len + slide) - bits(bufer)));
+                        }
+                        build~store_uint(0, ((old_bufer_len + slide) - bits(bufer)));
                 }
             }
         }
         if (s.slice_refs()) {
-            stack = cons(s~load_ref(), stack);
+            linked_list = s~load_ref();
+        }
+        else {
+            exit = 0;
         }
     }
     if (bufer != 0) {
         if(builder_bits(build) + bits(bufer) > 1023){
-          builders = cons(build, builders);
-          build = begin_cell();
+            builders = cons(build, builders);
+            build = begin_cell();
         }
         build~store_uint(bufer, bits(bufer));
     }
