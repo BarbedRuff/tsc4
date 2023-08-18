@@ -34,12 +34,7 @@ describe('Task1', () => {
     it('should deploy', async () => {
         let cell = new Builder();
         let cell1 = new Builder();
-        cell1.storeBit(1);
         let cell2 = new Builder();
-        cell1.storeBit(1);
-        cell1.storeBit(1);
-        cell1.storeBit(1);
-        cell1.storeBit(1);
         let cell3 = new Builder();
         let cell4 = new Builder();
         cell.storeRef(cell1);
